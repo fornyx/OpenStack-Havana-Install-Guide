@@ -16,9 +16,7 @@ Contributors
 
 =================================================== =======================================================
 
- Houssem Medhioub <houssem.medhioub@it-sudparis.eu> Djamal Zeghlache <djamal.zeghlache@telecom-sudparis.eu>
- Sandeep Raman  <sandeepr@hp.com>                   Sam Stoelinga <sammiestoel@gmail.com>
- Andy Edmonds <edmo@zhaw.ch>
+
  
 =================================================== =======================================================
 
@@ -335,4 +333,418 @@ Status: Stable
    iptables --append FORWARD --in-interface br-ex -j ACCEPT
 
 To create the quantum external network you should then follow `the multinode guide's section 5 <https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide/blob/OVS_MultiNode/OpenStack_Grizzly_Install_Guide.rst#5-your-first-vm>`_ on this. Note: when creating the external network, be sure to set the gateway IP to 192.168.100.51
+
+
+
+5.2. Quantum-*
+------------------
+
+* Install the Quantum components::
+
+   apt-get install -y quantum-server quantum-plugin-openvswitch quantum-plugin-openvswitch-agent dnsmasq quantum-dhcp-agent quantum-l3-agent 
+
+* Create a database::
+
+   mysql -u root -p
+   CREATE DATABASE quantum;
+   GRANT ALL ON quantum.* TO 'quantumUser'@'%' IDENTIFIED BY 'quantumPass';
+   quit; 
+
+* Verify all Quantum components are running::
+
+   cd /etc/init.d/; for i in $( ls quantum-* ); do sudo service $i status; done
+   
+* Edit /etc/quantum/api-paste.ini ::
+
+   [filter:authtoken]
+   paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
+   auth_host = 10.10.100.51
+   auth_port = 35357
+   auth_protocol = http
+   admin_tenant_name = service
+   admin_user = quantum
+   admin_password = service_pass
+
+* Edit the OVS plugin configuration file /etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini with::: 
+
+   #Under the database section
+   [DATABASE]
+   sql_connection = mysql://quantumUser:quantumPass@10.10.100.51/quantum
+
+   #Under the OVS section
+   [OVS]
+   tenant_network_type = gre
+   tunnel_id_ranges = 1:1000
+   integration_bridge = br-int
+   tunnel_bridge = br-tun
+   local_ip = 10.10.100.51
+   enable_tunneling = True
+
+   #Firewall driver for realizing quantum security group function
+   [SECURITYGROUP]
+   firewall_driver = quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+
+* Update /etc/quantum/metadata_agent.ini::
+
+   # The Quantum user information for accessing the Quantum API.
+   auth_url = http://10.10.100.51:35357/v2.0
+   auth_region = RegionOne
+   admin_tenant_name = service
+   admin_user = quantum
+   admin_password = service_pass
+
+   # IP address used by Nova metadata server
+   nova_metadata_ip = 127.0.0.1
+
+   # TCP Port used by Nova metadata server
+   nova_metadata_port = 8775
+
+   metadata_proxy_shared_secret = helloOpenStack
+
+* Edit your /etc/quantum/quantum.conf::
+
+   [keystone_authtoken]
+   auth_host = 10.10.100.51
+   auth_port = 35357
+   auth_protocol = http
+   admin_tenant_name = service
+   admin_user = quantum
+   admin_password = service_pass
+   signing_dir = /var/lib/quantum/keystone-signing
+
+* Restart all quantum services::
+
+   cd /etc/init.d/; for i in $( ls quantum-* ); do sudo service $i restart; done
+   service dnsmasq restart
+
+6. Nova
+===========
+
+6.1 KVM
+------------------
+
+* make sure that your hardware enables virtualization::
+
+   apt-get install cpu-checker
+   kvm-ok
+
+* Normally you would get a good response. Now, move to install kvm and configure it::
+
+   apt-get install -y kvm libvirt-bin pm-utils
+
+* Edit the cgroup_device_acl array in the /etc/libvirt/qemu.conf file to::
+
+   cgroup_device_acl = [
+   "/dev/null", "/dev/full", "/dev/zero",
+   "/dev/random", "/dev/urandom",
+   "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
+   "/dev/rtc", "/dev/hpet","/dev/net/tun"
+   ]
+
+* Delete default virtual bridge ::
+
+   virsh net-destroy default
+   virsh net-undefine default
+
+* Enable live migration by updating /etc/libvirt/libvirtd.conf file::
+
+   listen_tls = 0
+   listen_tcp = 1
+   auth_tcp = "none"
+
+* Edit libvirtd_opts variable in /etc/init/libvirt-bin.conf file::
+
+   env libvirtd_opts="-d -l"
+
+* Edit /etc/default/libvirt-bin file ::
+
+   libvirtd_opts="-d -l"
+
+* Restart the libvirt service and dbus to load the new values::
+
+   service dbus restart && service libvirt-bin restart 
+   
+
+6.2 Nova-*
+------------------
+
+* Start by installing nova components::
+
+   apt-get install -y nova-api nova-cert novnc nova-consoleauth nova-scheduler nova-novncproxy nova-doc nova-conductor nova-compute-kvm
+
+* Check the status of all nova-services::
+
+   cd /etc/init.d/; for i in $( ls nova-* ); do service $i status; cd; done
+
+* Prepare a Mysql database for Nova::
+
+   mysql -u root -p
+   CREATE DATABASE nova;
+   GRANT ALL ON nova.* TO 'novaUser'@'%' IDENTIFIED BY 'novaPass';
+   quit;
+
+* Now modify authtoken section in the /etc/nova/api-paste.ini file to this::
+
+   [filter:authtoken]
+   paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
+   auth_host = 10.10.100.51
+   auth_port = 35357
+   auth_protocol = http
+   admin_tenant_name = service
+   admin_user = nova
+   admin_password = service_pass
+   signing_dirname = /tmp/keystone-signing-nova
+   # Workaround for https://bugs.launchpad.net/nova/+bug/1154809
+   auth_version = v2.0
+
+* Modify the /etc/nova/nova.conf like this::
+
+   [DEFAULT] 
+   logdir=/var/log/nova
+   state_path=/var/lib/nova
+   lock_path=/run/lock/nova
+   verbose=True
+   api_paste_config=/etc/nova/api-paste.ini
+   compute_scheduler_driver=nova.scheduler.simple.SimpleScheduler
+   rabbit_host=10.10.100.51
+   nova_url=http://10.10.100.51:8774/v1.1/
+   sql_connection=mysql://novaUser:novaPass@10.10.100.51/nova
+   root_helper=sudo nova-rootwrap /etc/nova/rootwrap.conf
+
+   # Auth
+   use_deprecated_auth=false
+   auth_strategy=keystone
+
+   # Imaging service
+   glance_api_servers=10.10.100.51:9292
+   image_service=nova.image.glance.GlanceImageService
+
+   # Vnc configuration
+   novnc_enabled=true
+   novncproxy_base_url=http://192.168.100.51:6080/vnc_auto.html
+   novncproxy_port=6080
+   vncserver_proxyclient_address=10.10.100.51
+   vncserver_listen=0.0.0.0
+
+   # Network settings
+   network_api_class=nova.network.quantumv2.api.API
+   quantum_url=http://10.10.100.51:9696
+   quantum_auth_strategy=keystone
+   quantum_admin_tenant_name=service
+   quantum_admin_username=quantum
+   quantum_admin_password=service_pass
+   quantum_admin_auth_url=http://10.10.100.51:35357/v2.0
+   libvirt_vif_driver=nova.virt.libvirt.vif.LibvirtHybridOVSBridgeDriver
+   linuxnet_interface_driver=nova.network.linux_net.LinuxOVSInterfaceDriver
+   #If you want Quantum + Nova Security groups
+   firewall_driver=nova.virt.firewall.NoopFirewallDriver
+   security_group_api=quantum
+   #If you want Nova Security groups only, comment the two lines above and uncomment line -1-.
+   #-1-firewall_driver=nova.virt.libvirt.firewall.IptablesFirewallDriver
+   
+   #Metadata
+   service_quantum_metadata_proxy = True
+   quantum_metadata_proxy_shared_secret = helloOpenStack
+   metadata_host = 10.10.100.51
+   metadata_listen = 127.0.0.1
+   metadata_listen_port = 8775
+
+   # Compute #
+   compute_driver=libvirt.LibvirtDriver
+
+   # Cinder #
+   volume_api_class=nova.volume.cinder.API
+   osapi_volume_listen_port=5900
+
+* Edit the /etc/nova/nova-compute.conf::
+
+   [DEFAULT]
+   libvirt_type=kvm
+   libvirt_ovs_bridge=br-int
+   libvirt_vif_type=ethernet
+   libvirt_vif_driver=nova.virt.libvirt.vif.LibvirtHybridOVSBridgeDriver
+   libvirt_use_virtio_for_bridges=True
+    
+* Synchronize your database::
+
+   nova-manage db sync
+
+* Restart nova-* services::
+
+   cd /etc/init.d/; for i in $( ls nova-* ); do sudo service $i restart; done   
+
+* Check for the smiling faces on nova-* services to confirm your installation::
+
+   nova-manage service list
+
+7. Cinder
+===========
+
+* Install the required packages::
+
+   apt-get install -y cinder-api cinder-scheduler cinder-volume iscsitarget open-iscsi iscsitarget-dkms
+
+* Configure the iscsi services::
+
+   sed -i 's/false/true/g' /etc/default/iscsitarget
+
+* Restart the services::
+   
+   service iscsitarget start
+   service open-iscsi start
+
+* Prepare a Mysql database for Cinder::
+
+   mysql -u root -p
+   CREATE DATABASE cinder;
+   GRANT ALL ON cinder.* TO 'cinderUser'@'%' IDENTIFIED BY 'cinderPass';
+   quit;
+
+* Configure /etc/cinder/api-paste.ini like the following::
+
+   [filter:authtoken]
+   paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
+   service_protocol = http
+   service_host = 192.168.100.51
+   service_port = 5000
+   auth_host = 10.10.100.51
+   auth_port = 35357
+   auth_protocol = http
+   admin_tenant_name = service
+   admin_user = cinder
+   admin_password = service_pass
+
+* Edit the /etc/cinder/cinder.conf to::
+
+   [DEFAULT]
+   rootwrap_config=/etc/cinder/rootwrap.conf
+   sql_connection = mysql://cinderUser:cinderPass@10.10.100.51/cinder
+   api_paste_config = /etc/cinder/api-paste.ini
+   iscsi_helper=ietadm
+   volume_name_template = volume-%s
+   volume_group = cinder-volumes
+   verbose = True
+   auth_strategy = keystone
+   #osapi_volume_listen_port=5900
+
+* Then, synchronize your database::
+
+   cinder-manage db sync
+
+* Finally, don't forget to create a volumegroup and name it cinder-volumes::
+
+   dd if=/dev/zero of=cinder-volumes bs=1 count=0 seek=2G
+   losetup /dev/loop2 cinder-volumes
+   fdisk /dev/loop2
+   #Type in the followings:
+   n
+   p
+   1
+   ENTER
+   ENTER
+   t
+   8e
+   w
+
+* Proceed to create the physical volume then the volume group::
+
+   pvcreate /dev/loop2
+   vgcreate cinder-volumes /dev/loop2
+
+**Note:** Beware that this volume group gets lost after a system reboot. (Click `Here <https://github.com/mseknibilel/OpenStack-Folsom-Install-guide/blob/master/Tricks%26Ideas/load_volume_group_after_system_reboot.rst>`_ to know how to load it after a reboot) 
+
+* Restart the cinder services::
+
+   cd /etc/init.d/; for i in $( ls cinder-* ); do sudo service $i restart; done
+
+* Verify if cinder services are running::
+
+   cd /etc/init.d/; for i in $( ls cinder-* ); do sudo service $i status; done
+
+8. Horizon
+===========
+
+* To install horizon, proceed like this ::
+
+   apt-get -y install openstack-dashboard memcached
+
+* If you don't like the OpenStack ubuntu theme, you can remove the package to disable it::
+
+   dpkg --purge openstack-dashboard-ubuntu-theme 
+
+* Reload Apache and memcached::
+
+   service apache2 restart; service memcached restart
+
+You can now access your OpenStack **192.168.100.51/horizon** with credentials **admin:admin_pass**.
+
+9. Your first VM
+================
+
+To start your first VM, we first need to create a new tenant, user and internal network.
+
+* Create a new tenant ::
+
+   keystone tenant-create --name project_one
+
+* Create a new user and assign the member role to it in the new tenant (keystone role-list to get the appropriate id)::
+
+   keystone user-create --name=user_one --pass=user_one --tenant-id $put_id_of_project_one --email=user_one@domain.com
+   keystone user-role-add --tenant-id $put_id_of_project_one  --user-id $put_id_of_user_one --role-id $put_id_of_member_role
+
+* Create a new network for the tenant::
+
+   quantum net-create --tenant-id $put_id_of_project_one net_proj_one 
+
+* Create a new subnet inside the new tenant network::
+
+   quantum subnet-create --tenant-id $put_id_of_project_one net_proj_one 50.50.1.0/24
+
+* Create a router for the new tenant::
+
+   quantum router-create --tenant-id $put_id_of_project_one router_proj_one
+
+* Add the router to the running l3 agent (If it's not automatically added)::
+
+   quantum agent-list (to get the l3 agent ID)
+   quantum l3-agent-router-add $l3_agent_ID router_proj_one
+
+* Add the router to the subnet::
+
+   quantum router-interface-add $put_router_proj_one_id_here $put_subnet_id_here
+
+* Restart all quantum services::
+
+   cd /etc/init.d/; for i in $( ls quantum-* ); do sudo service $i restart; done
+
+That's it ! Log on to your dashboard, create your secure key and modify your security groups then create your first VM.
+
+10. Licensing
+============
+
+OpenStack Grizzly Install Guide is licensed under a Creative Commons Attribution 3.0 Unported License.
+
+.. image:: http://i.imgur.com/4XWrp.png
+To view a copy of this license, visit [ http://creativecommons.org/licenses/by/3.0/deed.en_US ].
+
+11. Contacts
+===========
+
+Bilel Msekni  : bilel.msekni@gmail.com
+
+12. Credits
+=================
+
+This work has been based on:
+
+* Bilel Msekni's Folsom Install guide [https://github.com/mseknibilel/OpenStack-Folsom-Install-guide]
+* OpenStack Grizzly Install Guide (Master Branch) [https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide]
+
+13. To do
+=======
+
+Your suggestions are always welcomed.
+
+
+
 
