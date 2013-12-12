@@ -102,16 +102,19 @@ It could be necessary to reboot your system in case you have a kernel upgrade
    #For Exposing OpenStack API over the internet
    auto eth1
    iface eth1 inet static
-   address 192.168.100.51
+   address 192.168.1.251
    netmask 255.255.255.0
-   gateway 192.168.100.1
-   dns-nameservers 8.8.8.8
+   gateway 192.168.1.1
+   dns-nameservers 192.168.1.1
 
    #Not internet connected(used for OpenStack management)
    auto eth0
    iface eth0 inet static
-   address 10.10.100.51
+   address 10.10.1.51
    netmask 255.255.255.0
+
+Please Note that in our simple architecture the DNS-nameservers and the default gateway are the same!
+
 
 * Restart the networking service::
 
