@@ -1,15 +1,15 @@
 ==========================================================
-  OpenStack Grizzly Install Guide
+  OpenStack Havana Install Guide
 ==========================================================
 
-:Version: 2.0
-:Source: https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide
-:Keywords: Single node OpenStack, Grizzly, Quantum, Nova, Keystone, Glance, Horizon, Cinder, OpenVSwitch, KVM, Ubuntu Server 12.04 (64 bits).
+:Version: 1.0
+:Source: https://github.com/fornyx/OpenStack-Havana-Install-Guide
+:Keywords: Single Multi node OpenStack, Havana, Neutron, Nova, Keystone, Glance, Horizon, Cinder, OpenVSwitch, KVM, Ubuntu Server 12.04 (64 bits).
 
 Authors
 ==========
 
-`Bilel Msekni <http://www.linkedin.com/profile/view?id=136237741&trk=tab_pro>`_ <bilel.msekni@gmail.com> 
+`Marco Fornaro <http://www.linkedin.com/profile/view?id=49858164>`_ <marco.fornaro@gmail.com> 
 
 Contributors
 ==========
