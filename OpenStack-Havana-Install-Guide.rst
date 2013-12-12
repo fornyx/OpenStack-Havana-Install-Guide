@@ -40,11 +40,12 @@ Table of Contents
   7. Cinder
   8. Horizon
   9. Your first VM
-  10. Licensing
-  11. Contacts
-  12. Acknowledgement
-  13. Credits
-  14. To do
+  10. Adding a Compute Node
+  11. Licensing
+  12. Contacts
+  13. Acknowledgement
+  14. Credits
+  15. To do
 
 0. What is it?
 ==============
@@ -62,15 +63,12 @@ Status: Stable
 ====================
 
 :Node Role: NICs
-:Single Node: eth0 (10.10.100.51), eth1 (192.168.100.51)
+:Single Node: eth0 (10.10.10.51), eth1 (192.168.1.251)
 
 **Note 1:** Multi node deployment is available on the OVS_MultiNode branch.
 
 **Note 2:** Always use dpkg -s <packagename> to make sure you are using grizzly packages (version : 2013.1)
 
-**Note 3:** This is my current network architecture.
-
-.. image:: http://i.imgur.com/58Dr48n.jpg
 
 2. Preparing your node
 ===============
