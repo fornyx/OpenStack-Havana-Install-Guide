@@ -62,12 +62,12 @@ Status: Stable
 1. Requirements
 ====================
 
-:Node Role: NICs
-:Single Node: eth0 (10.10.10.51), eth1 (192.168.1.251)
+:Node Role: Controller, Network Controller and Compute Node
+:Nics: eth0 (10.10.10.51), eth1 (192.168.1.251)
 
 **Note 1:** Multi node deployment is available on the OVS_MultiNode branch.
 
-**Note 2:** Always use dpkg -s <packagename> to make sure you are using grizzly packages (version : 2013.1)
+**Note 2:** Always use dpkg -s <packagename> to make sure you are using Havana packages (version : 2013.1)
 
 
 2. Preparing your node
