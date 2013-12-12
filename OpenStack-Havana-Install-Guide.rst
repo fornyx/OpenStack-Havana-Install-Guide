@@ -49,7 +49,8 @@ Table of Contents
 0. What is it?
 ==============
 
-OpenStack Havana Install Guide is projected to be a step-by-step "as easy as possible" guide and has been heavily tested
+OpenStack Havana Install Guide is projected to be a step-by-step "as easy as possible" guide and has been heavily tested.
+
 It aim to be one of the simplest way to get an OpenStack instance with advanced network components up and running. 
 
 If you like it, don't forget to star it !
