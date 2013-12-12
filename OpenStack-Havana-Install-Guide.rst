@@ -16,7 +16,10 @@ Contributors
 
 =================================================== =======================================================
 
-
+no contributors at the moment..:-(...
+...BUT this guide owe quite a lot from:
+`Bilel Msekni <https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide>`_ 
+ And I like to start this guide thanking him for his work :-)
  
 =================================================== =======================================================
 
