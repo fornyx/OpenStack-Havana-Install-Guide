@@ -80,10 +80,10 @@ Status: Stable
 
    sudo su
 
-* Add Grizzly repositories::
+* Add Havana repositories::
 
    apt-get install ubuntu-cloud-keyring python-software-properties software-properties-common python-keyring
-   echo deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/grizzly main >> /etc/apt/sources.list.d/grizzly.list
+   echo deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-proposed/havana main >> /etc/apt/sources.list.d/havana.list
 
 * Update your system::
 
