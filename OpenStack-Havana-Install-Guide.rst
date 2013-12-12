@@ -23,7 +23,7 @@ Contributors
 
 ===================================================
 
-Wana contribute ? Read the guide, send your contribution and get your name listed ;)
+Contributors are welcome! Read this guide, send your contribution and get your name listed :-)
 
 Table of Contents
 =================
@@ -35,7 +35,7 @@ Table of Contents
   2. Preparing your node
   3. Keystone
   4. Glance
-  5. Quantum
+  5. Neutron
   6. Nova
   7. Cinder
   8. Horizon
@@ -49,7 +49,8 @@ Table of Contents
 0. What is it?
 ==============
 
-OpenStack Grizzly Install Guide is an easy and tested way to create your own OpenStack platform. 
+OpenStack Havana Install Guide is projected to be a step-by-step "as easy as possible" guide and has been heavily tested
+It aim to be one of the simplest way to get an OpenStack instance with advanced network components up and running. 
 
 If you like it, don't forget to star it !
 
