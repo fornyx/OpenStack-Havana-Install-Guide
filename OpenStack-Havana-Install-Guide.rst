@@ -97,7 +97,7 @@ It could be necessary to reboot your system in case you have a kernel upgrade
 2.2.Networking
 ------------
 
-* Only one NIC should have an internet access::
+* Only one NIC should have an internet access, the other is for most Openstack-related operations and configurations::
 
    #For Exposing OpenStack API over the internet
    auto eth1
