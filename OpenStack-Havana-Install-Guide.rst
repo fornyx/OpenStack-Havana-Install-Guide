@@ -91,6 +91,9 @@ Status: Stable
    apt-get upgrade
    apt-get dist-upgrade
 
+
+It could be necessary to reboot your system in case you have a kernel upgrade
+
 2.2.Networking
 ------------
 
