@@ -65,9 +65,9 @@ Status: Stable
 :Node Role: Controller, Network Controller and Compute Node
 :Nics: eth0 (10.10.10.51), eth1 (192.168.1.251)
 
-**Note 1:** Multi node deployment is available on the OVS_MultiNode branch.
+**Note 1:** Multi node deployment is currently available in this guide, see "10. Adding a Compute Node".
 
-**Note 2:** Always use dpkg -s <packagename> to make sure you are using Havana packages (version : 2013.1)
+**Note 2:** We suggest to use dpkg -s <packagename> to make sure you are using Havana packages (you should see version : 2013.2)
 
 
 2. Preparing your node
@@ -110,7 +110,7 @@ It could be necessary to reboot your system in case you have a kernel upgrade
    #Not internet connected(used for OpenStack management)
    auto eth0
    iface eth0 inet static
-   address 10.10.1.51
+   address 10.10.10.51
    netmask 255.255.255.0
 
 Please Note that in our simple architecture the DNS-nameservers and the default gateway are the same!
