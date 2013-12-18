@@ -241,7 +241,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 * Adapt the connection attribute in the /etc/keystone/keystone.conf to the new database::
 
-   connection = mysql://keystoneUser:keystonePass@10.10.100.51/keystone
+   connection = mysql://keystone:openstacktest@10.10.10.51/keystone
 
 * Restart the identity service then synchronize the database::
 
@@ -252,8 +252,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    #Modify the HOST_IP and HOST_IP_EXT variables before executing the scripts
    
-   wget https://raw.github.com/mseknibilel/OpenStack-Grizzly-Install-Guide/OVS_SingleNode/KeystoneScripts/keystone_basic.sh
-   wget https://raw.github.com/mseknibilel/OpenStack-Grizzly-Install-Guide/OVS_SingleNode/KeystoneScripts/keystone_endpoints_basic.sh
+   wget https://raw.github.com/fornyx/OpenStack-Install-Guides/master/KeystoneScripts/keystone_basic.sh
+   wget https://raw.github.com/fornyx/OpenStack-Install-Guides/master/KeystoneScripts/keystone_endpoints_basic.sh
 
    chmod +x keystone_basic.sh
    chmod +x keystone_endpoints_basic.sh
@@ -263,18 +263,18 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 * Create a simple credential file and load it so you won't be bothered later::
 
-   nano creds
+   nano/vi keystone_source
 
    #Paste the following:
    export OS_TENANT_NAME=admin
    export OS_USERNAME=admin
-   export OS_PASSWORD=admin_pass
-   export OS_AUTH_URL="http://192.168.100.51:5000/v2.0/"
+   export OS_PASSWORD=openstacktest
+   export OS_AUTH_URL="http://192.168.1.251:5000/v2.0/"
 
    # Load it:
-   source creds
+   source keystone_source
 
-* To test Keystone, we use a simple CLI command::
+* To test Keystone, just use a simple CLI command::
 
    keystone user-list
 
@@ -290,53 +290,39 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    service glance-api status
    service glance-registry status
 
-* Create a new MySQL database for Glance::
-
-   mysql -u root -p
-   CREATE DATABASE glance;
-   GRANT ALL ON glance.* TO 'glanceUser'@'%' IDENTIFIED BY 'glancePass';
-   quit;
 
 * Update /etc/glance/glance-api-paste.ini with::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
    delay_auth_decision = true
-   auth_host = 10.10.100.51
+   auth_host = 10.10.10.51
    auth_port = 35357
    auth_protocol = http
    admin_tenant_name = service
    admin_user = glance
-   admin_password = service_pass
+   admin_password = openstacktest
 
 * Update the /etc/glance/glance-registry-paste.ini with::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
-   auth_host = 10.10.100.51
+   auth_host = 10.10.10.51
    auth_port = 35357
    auth_protocol = http
    admin_tenant_name = service
    admin_user = glance
-   admin_password = service_pass
+   admin_password = openstacktest
 
 * Update /etc/glance/glance-api.conf with::
 
-   sql_connection = mysql://glanceUser:glancePass@10.10.100.51/glance
+   sql_connection = mysql://glance:openstacktest@10.10.10.51/glance
 
 * And::
 
    [paste_deploy]
    flavor = keystone
    
-* Update the /etc/glance/glance-registry.conf with::
-
-   sql_connection = mysql://glanceUser:glancePass@10.10.100.51/glance
-
-* And::
-
-   [paste_deploy]
-   flavor = keystone
 
 * Restart the glance-api and glance-registry services::
 
@@ -350,13 +336,22 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    service glance-registry restart; service glance-api restart
 
-* To test Glance, upload the cirros cloud image directly from the internet::
+* To test Glance, upload the cirros cloud image and Ubuntu cloud image::
 
    glance image-create --name myFirstImage --is-public true --container-format bare --disk-format qcow2 --location https://launchpad.net/cirros/trunk/0.3.0/+download/cirros-0.3.0-x86_64-disk.img
+   
+   (mind you will be able to access VMs created with such image with the following credentials: user:cirros passwd: cubswin:))
+
+   wget http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-amd64-disk1.img
+
+   glance add name="Ubuntu 12.04 cloudimg amd64" is_public=true container_format=ovf disk_format=qcow2 < ./precise-server-cloudimg-amd64-disk1.img
+   
+
 
 * Now list the image to see what you have just uploaded::
 
    glance image-list
+   
 
 5. Quantum
 =============
