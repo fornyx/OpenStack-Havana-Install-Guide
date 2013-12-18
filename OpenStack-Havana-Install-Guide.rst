@@ -147,6 +147,15 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    mysql -u root -p your_mysql_root_password
    #Keystone
    CREATE DATABASE keystone;
+   GRANT ALL ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'openstacktest';
+   GRANT ALL ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY 'openstacktest';
+   GRANT ALL ON keystone.* TO 'keystone'@'10.10.10.51' IDENTIFIED BY 'openstacktest';
+   GRANT ALL ON keystone.* TO 'keystone'@'10.220.138.30' IDENTIFIED BY 'openstacktest';
+   GRANT ALL ON keystone.* TO 'keystone'@'192.168.1.251' IDENTIFIED BY 'openstacktest';
+   FLUSH PRIVILEGES;
+   quit;
+   (test database access and show databases with user keystone)
+
 
 
 2.6. Others
