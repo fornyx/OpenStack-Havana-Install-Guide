@@ -140,7 +140,16 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    apt-get install -y ntp
  
-2.5. Others
+2.5. Databases
+-------------------
+* Setting up Databases::
+
+   mysql -u root -p your_mysql_root_password
+   #Keystone
+   CREATE DATABASE keystone;
+
+
+2.6. Others
 -------------------
 
 * Install other services::
