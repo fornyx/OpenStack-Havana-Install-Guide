@@ -232,12 +232,6 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    service keystone status
 
-* Create a new MySQL database for keystone::
-
-   mysql -u root -p
-   CREATE DATABASE keystone;
-   GRANT ALL ON keystone.* TO 'keystoneUser'@'%' IDENTIFIED BY 'keystonePass';
-   quit;
 
 * Adapt the connection attribute in the /etc/keystone/keystone.conf to the new database::
 
