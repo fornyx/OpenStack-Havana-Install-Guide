@@ -347,7 +347,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    glance image-list
    
 
-5. Quantum
+5. Neutron
 =============
 
 5.1. OpenVSwitch
@@ -355,17 +355,21 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 * Install the openVSwitch::
 
-   apt-get install -y openvswitch-switch openvswitch-datapath-dkms
+   apt-get install -y openvswitch-controller openvswitch-switch openvswitch-datapath-dkms
+
+* Restart openVSwitch::
+
+   service openvswitch-switch restart
 
 * Create the bridges::
 
    #br-int will be used for VM integration	
    ovs-vsctl add-br br-int
 
-   #br-ex is used to make to access the internet (not covered in this guide)
+   #br-ex is used to make VMs to access the internet
    ovs-vsctl add-br br-ex
 
-5.1.1. OpenVSwitch (Part2, Optional)
+5.1.1. OpenVSwitch (Part2, modify network parameters)
 ------------------
 
 * This will guide you to setting up the br-ex interface. Edit the eth1 in /etc/network/interfaces to become like this::
@@ -383,25 +387,23 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    #Internet connectivity will be lost after this step but this won't affect OpenStack's work
    ovs-vsctl add-port br-ex eth1
 
-* Optional, If you want to get internet connection back, you can assign the eth1's IP address to the br-ex in the /etc/network/interfaces file::
+* If you want to get internet connection back, you can assign the eth1's IP address to the br-ex in the /etc/network/interfaces file::
 
    auto br-ex
    iface br-ex inet static
-   address 192.168.100.51
+   address 192.168.1.251
    netmask 255.255.255.0
-   gateway 192.168.100.1
-   dns-nameservers 8.8.8.8
+   gateway 192.168.1.1
+   dns-nameservers 192.168.1.1
 
 * Note to VirtualBox users, you will likely be using host-only adapters for the private networking. You need to provide a route out of the host-only network to contact the outside world; egress is not supported by host-only adapters. This can be done by routing traffic from br-ex to an additional NAT'ed adapter that you can add. Run these commands (where NAT'ed adapter is eth2)::
 
    iptables --table nat --append POSTROUTING --out-interface eth2 -j MASQUERADE
    iptables --append FORWARD --in-interface br-ex -j ACCEPT
 
-To create the quantum external network you should then follow `the multinode guide's section 5 <https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide/blob/OVS_MultiNode/OpenStack_Grizzly_Install_Guide.rst#5-your-first-vm>`_ on this. Note: when creating the external network, be sure to set the gateway IP to 192.168.100.51
 
 
-
-5.2. Quantum-*
+5.2. Neutron-*
 ------------------
 
 * Install the Quantum components::
