@@ -69,6 +69,7 @@ Status: Stable
 
 **Note 2:** We suggest to use dpkg -s <packagename> to make sure you are using Havana packages (you should see version : 2013.2)
 
+**Note 3:** This is a simple test/demo installation, and so the password policy has been VERY simplified: we use "openstacktest" as default password (see further)
 
 2. Preparing your node
 ===============
