@@ -545,9 +545,22 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    apt-get install cpu-checker
    kvm-ok
 
-* Normally you would get a good response. Now, move to install kvm and configure it::
+* it could be necessary to do::
+
+   sudo modprobe kvm_intel
+   kvm-ok
+
+* Finally you should get::
+
+   INFO: /dev/kvm exists
+   KVM acceleration can be used
+
+   
+* Let's go for KVM installation::
 
    apt-get install -y kvm libvirt-bin pm-utils
+
+
 
 * Edit the cgroup_device_acl array in the /etc/libvirt/qemu.conf file to::
 
@@ -557,6 +570,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
    "/dev/rtc", "/dev/hpet","/dev/net/tun"
    ]
+
 
 * Delete default virtual bridge ::
 
