@@ -396,15 +396,10 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    gateway 192.168.1.1
    dns-nameservers 192.168.1.1
    
-* If you want to get internet connection back, you can assign the eth1's IP address to the br-ex in the /etc/network/interfaces file::
+* If you want IMMEDIATELY want your FULL networking features back I suggest::
 
-   auto br-ex
-   iface br-ex inet static
-   address 192.168.1.251
-   netmask 255.255.255.0
-   gateway 192.168.1.1
-   dns-nameservers 192.168.1.1
-
+   reboot
+   source keystone_source (to get your environnment variables back)
 
 
 * Note to VirtualBox users, you will likely be using host-only adapters for the private networking. You need to provide a route out of the host-only network to contact the outside world; egress is not supported by host-only adapters. This can be done by routing traffic from br-ex to an additional NAT'ed adapter that you can add. Run these commands (where NAT'ed adapter is eth2)::
