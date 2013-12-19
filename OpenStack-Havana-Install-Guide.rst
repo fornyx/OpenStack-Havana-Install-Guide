@@ -412,69 +412,67 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 5.2. Neutron-*
 ------------------
 
-* Install the Quantum components::
+* Install the Neutron components::
 
-   apt-get install -y quantum-server quantum-plugin-openvswitch quantum-plugin-openvswitch-agent dnsmasq quantum-dhcp-agent quantum-l3-agent 
-
-* Create a database::
-
-   mysql -u root -p
-   CREATE DATABASE quantum;
-   GRANT ALL ON quantum.* TO 'quantumUser'@'%' IDENTIFIED BY 'quantumPass';
-   quit; 
-
-* Verify all Quantum components are running::
-
-   cd /etc/init.d/; for i in $( ls quantum-* ); do sudo service $i status; done
+   apt-get install -y neutron-server neutron-plugin-openvswitch neutron-plugin-openvswitch-agent dnsmasq neutron-dhcp-agent neutron-l3-agent neutron-metadata-agent
    
-* Edit /etc/quantum/api-paste.ini ::
+
+* Verify all Neutron components are running::
+
+   cd /etc/init.d/; for i in $( ls neutron-* ); do sudo service $i status; cd; done
+   
+* Edit /etc/neutron/api-paste.ini ::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
-   auth_host = 10.10.100.51
+   auth_host = 10.10.10.51
    auth_port = 35357
    auth_protocol = http
    admin_tenant_name = service
-   admin_user = quantum
-   admin_password = service_pass
+   admin_user = neutron
+   admin_password = openstacktest
 
-* Edit the OVS plugin configuration file /etc/quantum/plugins/openvswitch/ovs_quantum_plugin.ini with::: 
+* Edit the OVS plugin configuration file /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini with::: 
 
    #Under the database section
    [DATABASE]
-   sql_connection = mysql://quantumUser:quantumPass@10.10.100.51/quantum
+   sql_connection=mysql://neutron:openstacktest@10.10.10.51/neutron
 
    #Under the OVS section
    [OVS]
    tenant_network_type = gre
+   enable_tunneling = True
    tunnel_id_ranges = 1:1000
    integration_bridge = br-int
    tunnel_bridge = br-tun
-   local_ip = 10.10.100.51
-   enable_tunneling = True
+   local_ip = 10.10.10.51
 
-   #Firewall driver for realizing quantum security group function
+   #Firewall driver for realizing neutron security group function
    [SECURITYGROUP]
-   firewall_driver = quantum.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+   firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
 
-* Update /etc/quantum/metadata_agent.ini::
+* Update /etc/neutron/metadata_agent.ini::
 
-   # The Quantum user information for accessing the Quantum API.
-   auth_url = http://10.10.100.51:35357/v2.0
+   # The Neutron user information for accessing the Neutron API.
+   auth_url = http://10.10.10.51:35357/v2.0
    auth_region = RegionOne
    admin_tenant_name = service
-   admin_user = quantum
-   admin_password = service_pass
+   admin_user = neutron
+   admin_password = openstacktest
 
    # IP address used by Nova metadata server
-   nova_metadata_ip = 127.0.0.1
+   nova_metadata_ip = 10.10.10.51
+   
 
    # TCP Port used by Nova metadata server
    nova_metadata_port = 8775
 
    metadata_proxy_shared_secret = helloOpenStack
 
-* Edit your /etc/quantum/quantum.conf::
+* Edit your /etc/neutron/neutron.conf::
+
+   #RabbitMQ IP
+   rabbit_host = 10.10.10.51
 
    [keystone_authtoken]
    auth_host = 10.10.100.51
@@ -482,8 +480,12 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    auth_protocol = http
    admin_tenant_name = service
    admin_user = quantum
-   admin_password = service_pass
+   admin_password = openstacktest
    signing_dir = /var/lib/quantum/keystone-signing
+   
+   [DATABASE]
+   connection = mysql://neutron:openstacktest@10.10.10.51/neutron
+
 
 * Restart all quantum services::
 
