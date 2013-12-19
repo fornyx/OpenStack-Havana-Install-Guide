@@ -399,9 +399,12 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 * If you IMMEDIATELY want your full networking back I suggest:
 
-   reboot
-   (re-login as root)
-   source keystone_source (to keep environnment variables before going ahead)
+   auto br-ex
+   iface br-ex inet static
+   address 192.168.1.251
+   netmask 255.255.255.0
+   gateway 192.168.1.1
+   dns-nameservers 192.168.1.1
 
 
 * Note to VirtualBox users, you will likely be using host-only adapters for the private networking. You need to provide a route out of the host-only network to contact the outside world; egress is not supported by host-only adapters. This can be done by routing traffic from br-ex to an additional NAT'ed adapter that you can add. Run these commands (where NAT'ed adapter is eth2)::
