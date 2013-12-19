@@ -487,10 +487,51 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    connection = mysql://neutron:openstacktest@10.10.10.51/neutron
 
 
+* Edit your /etc/neutron/l3_agent.ini::
+
+   [DEFAULT]
+   interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
+   use_namespaces = True
+   external_network_bridge = br-ex
+   signing_dir = /var/cache/neutron
+   admin_tenant_name = service
+   admin_user = neutron
+   admin_password = openstacktest
+   auth_url = http://10.10.10.51:35357/v2.0
+   l3_agent_manager = neutron.agent.l3_agent.L3NATAgentWithStateReport
+   root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf
+   interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
+
+
+* Edit your /etc/neutron/dhcp_agent.ini::
+
+   [DEFAULT]
+   interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
+   dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
+   use_namespaces = True
+   signing_dir = /var/cache/neutron
+   admin_tenant_name = service
+   admin_user = neutron
+   admin_password = openstacktest
+   auth_url = http://10.10.10.51:35357/v2.0
+   dhcp_agent_manager = neutron.agent.dhcp_agent.DhcpAgentWithStateReport
+   root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf
+   state_path = /var/lib/neutron
+
+
+
 * Restart all quantum services::
 
-   cd /etc/init.d/; for i in $( ls quantum-* ); do sudo service $i restart; done
+   cd /etc/init.d/; for i in $( ls neutron-* ); do sudo service $i restart; cd /root/; done
    service dnsmasq restart
+   
+   and check status:
+   cd /etc/init.d/; for i in $( ls neutron-* ); do sudo service $i status; cd /root/; done
+   
+   then check all neutron agents:
+   neutron agent-list
+   (hopefully you'll enjoy smiling faces :-) )
+
 
 6. Nova
 ===========
