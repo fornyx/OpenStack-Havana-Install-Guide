@@ -520,13 +520,14 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 
 
-* Restart all quantum services::
+* Restart all neutron services::
 
    cd /etc/init.d/; for i in $( ls neutron-* ); do sudo service $i restart; cd /root/; done
    service dnsmasq restart
    
    and check status:
    cd /etc/init.d/; for i in $( ls neutron-* ); do sudo service $i status; cd /root/; done
+   service dnsmasq status
    
    then check all neutron agents:
    neutron agent-list
