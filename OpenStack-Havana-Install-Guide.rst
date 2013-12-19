@@ -479,9 +479,9 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    auth_port = 35357
    auth_protocol = http
    admin_tenant_name = service
-   admin_user = quantum
+   admin_user = neutron
    admin_password = openstacktest
-   signing_dir = /var/lib/quantum/keystone-signing
+   signing_dir = /var/lib/neutron/keystone-signing
    
    [DATABASE]
    connection = mysql://neutron:openstacktest@10.10.10.51/neutron
@@ -593,7 +593,11 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 * Restart the libvirt service and dbus to load the new values::
 
-   service dbus restart && service libvirt-bin restart 
+   service dbus restart && service libvirt-bin restart
+   
+   then check status:
+   
+   service dbus status && service libvirt-bin status
    
 
 6.2 Nova-*
@@ -607,39 +611,33 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    cd /etc/init.d/; for i in $( ls nova-* ); do service $i status; cd; done
 
-* Prepare a Mysql database for Nova::
-
-   mysql -u root -p
-   CREATE DATABASE nova;
-   GRANT ALL ON nova.* TO 'novaUser'@'%' IDENTIFIED BY 'novaPass';
-   quit;
 
 * Now modify authtoken section in the /etc/nova/api-paste.ini file to this::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
-   auth_host = 10.10.100.51
+   auth_host = 10.10.10.51
    auth_port = 35357
    auth_protocol = http
    admin_tenant_name = service
    admin_user = nova
-   admin_password = service_pass
+   admin_password = openstacktest
    signing_dirname = /tmp/keystone-signing-nova
    # Workaround for https://bugs.launchpad.net/nova/+bug/1154809
    auth_version = v2.0
 
 * Modify the /etc/nova/nova.conf like this::
 
-   [DEFAULT] 
+   [DEFAULT]
    logdir=/var/log/nova
    state_path=/var/lib/nova
    lock_path=/run/lock/nova
    verbose=True
    api_paste_config=/etc/nova/api-paste.ini
    compute_scheduler_driver=nova.scheduler.simple.SimpleScheduler
-   rabbit_host=10.10.100.51
-   nova_url=http://10.10.100.51:8774/v1.1/
-   sql_connection=mysql://novaUser:novaPass@10.10.100.51/nova
+   rabbit_host=10.10.10.51
+   nova_url=http://10.10.10.51:8774/v1.1/
+   sql_connection=mysql://nova:openstacktest@10.10.10.51/nova
    root_helper=sudo nova-rootwrap /etc/nova/rootwrap.conf
 
    # Auth
@@ -647,45 +645,48 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    auth_strategy=keystone
 
    # Imaging service
-   glance_api_servers=10.10.100.51:9292
+   glance_api_servers=10.10.10.51:9292
    image_service=nova.image.glance.GlanceImageService
 
    # Vnc configuration
    novnc_enabled=true
-   novncproxy_base_url=http://192.168.100.51:6080/vnc_auto.html
+   novncproxy_base_url=http://192.168.1.251:6080/vnc_auto.html
    novncproxy_port=6080
-   vncserver_proxyclient_address=10.10.100.51
+   vncserver_proxyclient_address=10.10.10.51
    vncserver_listen=0.0.0.0
 
    # Network settings
-   network_api_class=nova.network.quantumv2.api.API
-   quantum_url=http://10.10.100.51:9696
-   quantum_auth_strategy=keystone
-   quantum_admin_tenant_name=service
-   quantum_admin_username=quantum
-   quantum_admin_password=service_pass
-   quantum_admin_auth_url=http://10.10.100.51:35357/v2.0
+   network_api_class=nova.network.neutronv2.api.API
+   neutron_url=http://10.10.10.51:9696
+   neutron_auth_strategy=keystone
+   neutron_admin_tenant_name=service
+   neutron_admin_username=neutron
+   neutron_admin_password=openstacktest
+   neutron_admin_auth_url=http://10.10.10.51:35357/v2.0
    libvirt_vif_driver=nova.virt.libvirt.vif.LibvirtHybridOVSBridgeDriver
    linuxnet_interface_driver=nova.network.linux_net.LinuxOVSInterfaceDriver
-   #If you want Quantum + Nova Security groups
-   firewall_driver=nova.virt.firewall.NoopFirewallDriver
-   security_group_api=quantum
+   #If you want Neutron + Nova Security groups
+   #firewall_driver=nova.virt.firewall.NoopFirewallDriver
+   #security_group_api=neutron
    #If you want Nova Security groups only, comment the two lines above and uncomment line -1-.
    #-1-firewall_driver=nova.virt.libvirt.firewall.IptablesFirewallDriver
    
    #Metadata
-   service_quantum_metadata_proxy = True
-   quantum_metadata_proxy_shared_secret = helloOpenStack
-   metadata_host = 10.10.100.51
+   service_neutron_metadata_proxy = True
+   neutron_metadata_proxy_shared_secret = helloOpenStack
+   metadata_host = 10.10.10.51
    metadata_listen = 127.0.0.1
    metadata_listen_port = 8775
-
+   
    # Compute #
    compute_driver=libvirt.LibvirtDriver
-
+   
    # Cinder #
    volume_api_class=nova.volume.cinder.API
    osapi_volume_listen_port=5900
+   cinder_catalog_info=volume:cinder:internalURL
+
+
 
 * Edit the /etc/nova/nova-compute.conf::
 
