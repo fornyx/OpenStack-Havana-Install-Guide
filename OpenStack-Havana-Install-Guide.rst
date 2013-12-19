@@ -697,17 +697,33 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    libvirt_vif_driver=nova.virt.libvirt.vif.LibvirtHybridOVSBridgeDriver
    libvirt_use_virtio_for_bridges=True
     
+* Restart nova-* services::
+
+   cd /etc/init.d/; for i in $( ls nova-* ); do sudo service $i restart; cd /root/;done
+
+   cd /etc/init.d/; for i in $( ls nova-* ); do sudo service $i status; cd /root/;done
+
+   (mind nova cert is ok if it’s down: still the db has to be built up!)
+
+
+
 * Synchronize your database::
 
    nova-manage db sync
 
 * Restart nova-* services::
 
-   cd /etc/init.d/; for i in $( ls nova-* ); do sudo service $i restart; done   
+   cd /etc/init.d/; for i in $( ls nova-* ); do sudo service $i restart; cd /root/;done
 
-* Check for the smiling faces on nova-* services to confirm your installation::
+   ...and check:
+   
+   cd /etc/init.d/; for i in $( ls nova-* ); do sudo service $i status; cd /root/;done
+   
+
+* Hopefully you should enjoy smiling faces on nova-* services to confirm your installation::
 
    nova-manage service list
+   
 
 7. Cinder
 ===========
