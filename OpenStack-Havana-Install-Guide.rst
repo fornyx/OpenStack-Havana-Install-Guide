@@ -43,7 +43,6 @@ Table of Contents
   10. Adding a Compute Node
   11. Licensing
   12. Contacts
-  13. Acknowledgement
   14. Credits
   15. To do
 
@@ -52,7 +51,7 @@ Table of Contents
 
 OpenStack Havana Install Guide is projected to be a step-by-step "as easy as possible" guide and has been heavily tested.
 
-It aim to be one of the simplest way to get an OpenStack instance with advanced network components up and running. 
+It aims to be one of the simplest way to get an OpenStack instance with advanced network components up and running. 
 
 If you like it, don't forget to star it !
 
@@ -838,45 +837,66 @@ To start your first VM, we first need to create a new tenant, user and internal 
 
 * Create a new network for the tenant::
 
-   quantum net-create --tenant-id $put_id_of_project_one net_proj_one 
+   neutron net-create --tenant-id $put_id_of_project_one net_proj_one 
 
 * Create a new subnet inside the new tenant network::
 
-   quantum subnet-create --tenant-id $put_id_of_project_one net_proj_one 50.50.1.0/24
+   neutron subnet-create --tenant-id $put_id_of_project_one net_proj_one 50.50.1.0/24 --dns_nameservers list=true 192.168.1.1
 
 * Create a router for the new tenant::
 
-   quantum router-create --tenant-id $put_id_of_project_one router_proj_one
+   neutron router-create --tenant-id $put_id_of_project_one router_proj_one
 
 * Add the router to the running l3 agent (If it's not automatically added)::
 
-   quantum agent-list (to get the l3 agent ID)
-   quantum l3-agent-router-add $l3_agent_ID router_proj_one
+   neutron agent-list (to get the l3 agent ID)
+   neutron l3-agent-router-add $l3_agent_ID router_proj_one
 
 * Add the router to the subnet::
 
-   quantum router-interface-add $put_router_proj_one_id_here $put_subnet_id_here
+   neutron router-interface-add $put_router_proj_one_id_here $put_subnet_id_here
 
-* Restart all quantum services::
+* Restart all neutron services::
 
-   cd /etc/init.d/; for i in $( ls quantum-* ); do sudo service $i restart; done
+   cd /etc/init.d/; for i in $( ls neutron-* ); do sudo service $i restart; cd;done
+   
+   check services are on:
+   
+   cd /etc/init.d/; for i in $( ls neutron-* ); do sudo service $i status; cd;done
+   
+   ...and check agent looking for smiling faces :-)
+   
+   neutron agent-list
 
-That's it ! Log on to your dashboard, create your secure key and modify your security groups then create your first VM.
 
-10. Licensing
+* Create an external network with the tenant id belonging to the admin tenant (keystone tenant-list to get the appropriate id)::
+
+   neutron net-create --tenant-id $put_id_of_admin_tenant ext_net --router:external=True
+
+
+
+10. Adding a Compute Node
+================
+
+All this document do refer to a "demo" installation, optimization of services allocated on servers is out of the scope of this document.
+Nevertheless we think that can be useful and appreciated to indicate the minimum operations that are necessary to add a compute node.
+
+
+
+11. Licensing
 ============
 
-OpenStack Grizzly Install Guide is licensed under a Creative Commons Attribution 3.0 Unported License.
+This OpenStack Havana Install Guide is licensed under a Creative Commons Attribution 3.0 Unported License.
 
 .. image:: http://i.imgur.com/4XWrp.png
 To view a copy of this license, visit [ http://creativecommons.org/licenses/by/3.0/deed.en_US ].
 
-11. Contacts
+12. Contacts
 ===========
 
-Bilel Msekni  : bilel.msekni@gmail.com
+Marco Fornaro  : marco.fornaro@gmail.com
 
-12. Credits
+13. Credits
 =================
 
 This work has been based on:
@@ -884,7 +904,7 @@ This work has been based on:
 * Bilel Msekni's Folsom Install guide [https://github.com/mseknibilel/OpenStack-Folsom-Install-guide]
 * OpenStack Grizzly Install Guide (Master Branch) [https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide]
 
-13. To do
+14. To do
 =======
 
 Your suggestions are always welcomed.
