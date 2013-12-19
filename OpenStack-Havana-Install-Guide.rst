@@ -736,37 +736,32 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    sed -i 's/false/true/g' /etc/default/iscsitarget
 
-* Restart the services::
+* Start the services::
    
    service iscsitarget start
    service open-iscsi start
 
-* Prepare a Mysql database for Cinder::
-
-   mysql -u root -p
-   CREATE DATABASE cinder;
-   GRANT ALL ON cinder.* TO 'cinderUser'@'%' IDENTIFIED BY 'cinderPass';
-   quit;
 
 * Configure /etc/cinder/api-paste.ini like the following::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
    service_protocol = http
-   service_host = 192.168.100.51
+   service_host = 192.168.1.251
    service_port = 5000
-   auth_host = 10.10.100.51
+   auth_host = 10.10.1.51
    auth_port = 35357
    auth_protocol = http
    admin_tenant_name = service
    admin_user = cinder
-   admin_password = service_pass
+   admin_password = openstacktest
+
 
 * Edit the /etc/cinder/cinder.conf to::
 
    [DEFAULT]
    rootwrap_config=/etc/cinder/rootwrap.conf
-   sql_connection = mysql://cinderUser:cinderPass@10.10.100.51/cinder
+   sql_connection = mysql://cinder:openstacktest@10.10.10.51/cinder
    api_paste_config = /etc/cinder/api-paste.ini
    iscsi_helper=ietadm
    volume_name_template = volume-%s
@@ -799,15 +794,16 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    pvcreate /dev/loop2
    vgcreate cinder-volumes /dev/loop2
 
-**Note:** Beware that this volume group gets lost after a system reboot. (Click `Here <https://github.com/mseknibilel/OpenStack-Folsom-Install-guide/blob/master/Tricks%26Ideas/load_volume_group_after_system_reboot.rst>`_ to know how to load it after a reboot) 
+**Note:** Beware that this volume group gets lost after a system reboot. 
 
 * Restart the cinder services::
 
-   cd /etc/init.d/; for i in $( ls cinder-* ); do sudo service $i restart; done
+   cd /etc/init.d/; for i in $( ls cinder-* ); do sudo service $i restart; cd /root/; done
 
 * Verify if cinder services are running::
 
-   cd /etc/init.d/; for i in $( ls cinder-* ); do sudo service $i status; done
+   cd /etc/init.d/; for i in $( ls cinder-* ); do sudo service $i status; cd /root/; done
+
 
 8. Horizon
 ===========
@@ -824,7 +820,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    service apache2 restart; service memcached restart
 
-You can now access your OpenStack **192.168.100.51/horizon** with credentials **admin:admin_pass**.
+You can now access your OpenStack **192.168.1.251/horizon** with credentials **admin:openstacktest**.
 
 9. Your first VM
 ================
