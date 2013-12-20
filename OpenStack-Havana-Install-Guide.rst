@@ -873,6 +873,14 @@ To start your first VM, we first need to create a new tenant, user and internal 
 
    neutron net-create --tenant-id $put_id_of_admin_tenant ext_net --router:external=True
 
+* Create a subnet for floating IPs:
+   
+   neutron subnet-create --tenant-id $put_id_of_admin_tenant --allocation-pool start=192.168.1.52,end=192.168.1.76 --gateway 192.168.1.251 ext_net 192.168.1.0/24 --enable_dhcp=False
+   
+NOTE: Important: in case of mono-server installation the server host ip address MUST be the gateway!!!!, in our case it’s 192.168.1.251..in case of a multi-server installation with controller, Network Controller and compute nodes, the gateway would be the "normal" network gateway, in our case 192.168.1.1
+
+
+
 
 
 10. Adding a Compute Node
