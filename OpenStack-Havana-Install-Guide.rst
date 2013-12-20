@@ -886,17 +886,17 @@ NOTE: Important: in case of mono-server installation the server host ip address 
 
 
 
-* Create a Source file with your own user and tenant credentials relative to your project one tenant::
+* Create a Source file with your own user and tenant credentials relative to your project one::
 
    nano creds_proj_one
 
    #Paste the following:
-  export OS_TENANT_NAME=project_one
-  export OS_USERNAME=user_one
-  export OS_PASSWORD=user_one
-  export OS_AUTH_URL="http://192.168.1.251:5000/v2.0/"
+   export OS_TENANT_NAME=project_one
+   export OS_USERNAME=user_one
+   export OS_PASSWORD=user_one
+   export OS_AUTH_URL="http://192.168.1.251:5000/v2.0/"
 
-  source creds_proj_one
+   source creds_proj_one
 
 
 
