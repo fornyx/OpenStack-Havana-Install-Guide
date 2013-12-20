@@ -898,6 +898,25 @@ NOTE: Important: in case of mono-server installation the server host ip address 
 
    source creds_proj_one
 
+Now some few operations to clarify the minimum necessary operations about ssh::
+
+* Create a Keypair (if you haven't already done)
+
+   ssh-keygen -t rsa -C "youraccountname@youremaildomain.com"
+   
+   nova keypair-add --pub_key ~/.ssh/id_rsa.pub mykey
+   
+   list your keypairs to check:
+   
+   nova keypair-list
+   
+   (you should get something like:)
+   
+   +-------+-------------------------------------------------+
+   | Name  | Fingerprint                                     |
+   +-------+-------------------------------------------------+
+   | mykey | 1a:91:f9:12:ed:f3:a0:f2:f6:6b:17:63:e1:6b:4f:d4 |
+   +-------+-------------------------------------------------+
 
 
 
