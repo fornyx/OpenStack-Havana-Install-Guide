@@ -918,6 +918,32 @@ Now some few operations to clarify the minimum necessary operations about ssh
    | mykey | 1a:91:f9:12:ed:f3:a0:f2:f6:6b:17:63:e1:6b:4f:d4 |
    +-------+-------------------------------------------------+
 
+After ssh operations we get back to our business
+
+* Add security rules to make your VMs pingable::
+
+   nova --no-cache secgroup-add-rule default icmp -1 -1 0.0.0.0/0
+   
+   nova --no-cache secgroup-add-rule default tcp 22 22 0.0.0.0/0
+
+* Allocating a floating ip to the project one tenant::
+
+   neutron floatingip-create ext_net
+   
+* Start a Virtual Machine with the "holy" cirros image :-)::
+
+   nova --no-cache boot --image $id_myFirstImage --flavor 1 my_first_vm
+
+
+* Pick the id of the port corresponding to your VM::
+
+   neutron port-list
+
+
+* Associate the floating IP to your VM::
+
+  neutron floatingip-associate $put_id_floating_ip $put_id_vm_port
+
 
 
 
