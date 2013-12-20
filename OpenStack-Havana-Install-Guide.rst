@@ -942,7 +942,7 @@ After ssh operations we get back to our business
 
 * Associate the floating IP to your VM::
 
-  neutron floatingip-associate $put_id_floating_ip $put_id_vm_port
+   neutron floatingip-associate $put_id_floating_ip $put_id_vm_port
 
 
 
