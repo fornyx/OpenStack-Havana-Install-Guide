@@ -898,9 +898,9 @@ NOTE: Important: in case of mono-server installation the server host ip address 
 
    source creds_proj_one
 
-Now some few operations to clarify the minimum necessary operations about ssh::
+Now some few operations to clarify the minimum necessary operations about ssh
 
-* Create a Keypair (if you haven't already done)
+* Create a Keypair (if you haven't already done)::
 
    ssh-keygen -t rsa -C "youraccountname@youremaildomain.com"
    
