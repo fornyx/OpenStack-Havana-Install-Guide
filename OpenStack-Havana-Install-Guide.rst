@@ -944,8 +944,47 @@ After ssh operations we get back to our business
 
    neutron floatingip-associate $put_id_floating_ip $put_id_vm_port
 
+9.1. Accessing VMs
+-----------------
+
+In this installation we did configure namespaces, this means that you cannot directly ping/ssh/access a VM DIRECTLY
+Referring to our precedent operations in cap. "9", let's suppose that you created a VM with
+IP address:
+50.50.1.3
+and that the associated floating IP is:
+192.168.1.53
+
+* you DO CAN ping/ssh 192.168.1.53, so::
+
+  both:
+  ping 192.168.1.53
+  
+  and
+  ssh cirros@192.168.1.53
+  
+  should work fine!
 
 
+But you CANNOT ping/ssh 50.50.1.3 DIRECTLY
+
+* It is necessary to digit at prompt::
+
+   ip netns
+   
+   you'll get some long codes, one of them will be the dhcp associated with your internal network, it should look like:
+   qdhcp-6d9da13e-263b-4162-8d10-beed97497723
+   (you can distinguish between each object just investigating on the Horizon web interfaces: look for network properties)
+   
+   you can use that namespace to access your created VM even without a floating IP with the following commands:
+   
+   ip netns exec qdhcp-6d9da13e-263b-4162-8d10-beed97497723 ping 50.50.1.3
+   
+   ip netns exec qdhcp-6d9da13e-263b-4162-8d10-beed97497723 ssh cirros@50.50.1.2
+   
+
+for more information we suggest the following link:
+http://docs.openstack.org/grizzly/basic-install/apt/content/basic-install_operate.html
+(paritularly: "Procedure 3.4. To SSH into the launched instance")
 
 
 10. Adding a Compute Node
@@ -954,6 +993,8 @@ After ssh operations we get back to our business
 All this document do refer to a "demo" installation, optimization of services allocated on servers is out of the scope of this document.
 Nevertheless we think that can be useful and appreciated to indicate the minimum operations that are necessary to add a compute node.
 
+
+TODO
 
 
 11. Licensing
@@ -974,8 +1015,7 @@ Marco Fornaro  : marco.fornaro@gmail.com
 
 This work has been based on:
 
-* Bilel Msekni's Folsom Install guide [https://github.com/mseknibilel/OpenStack-Folsom-Install-guide]
-* OpenStack Grizzly Install Guide (Master Branch) [https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide]
+TODO
 
 14. To do
 =======
