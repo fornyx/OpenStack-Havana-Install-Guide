@@ -956,13 +956,13 @@ and that the associated floating IP is:
 
 * you DO CAN ping/ssh 192.168.1.53, so::
 
-  both:
-  ping 192.168.1.53
-  
-  and
-  ssh cirros@192.168.1.53
-  
-  should work fine!
+   both:
+   ping 192.168.1.53
+   
+   and
+   ssh cirros@192.168.1.53
+   
+   should work fine!
 
 
 But you CANNOT ping/ssh 50.50.1.3 DIRECTLY
