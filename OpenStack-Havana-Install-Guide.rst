@@ -968,18 +968,18 @@ and that the associated floating IP is:
 But you CANNOT ping/ssh 50.50.1.3 DIRECTLY
 
 * It is necessary to digit at prompt::
-
-  ip netns
    
-  you'll get some long codes, one of them will be the dhcp associated with your internal network, it should look like:
-  qdhcp-6d9da13e-263b-4162-8d10-beed97497723
-  (you can distinguish between each object just investigating on the Horizon web interfaces: look for network properties)
+   ip netns
    
-  you can use that namespace to access your created VM even without a floating IP with the following commands:
+   you'll get some long codes, one of them will be the dhcp associated with your internal network, it should look like:
+   qdhcp-6d9da13e-263b-4162-8d10-beed97497723
+   (you can distinguish between each object just investigating on the Horizon web interfaces: look for network properties)
    
-  ip netns exec qdhcp-6d9da13e-263b-4162-8d10-beed97497723 ping 50.50.1.3
+   you can use that namespace to access your created VM even without a floating IP with the following commands:
    
-  ip netns exec qdhcp-6d9da13e-263b-4162-8d10-beed97497723 ssh cirros@50.50.1.2
+   ip netns exec qdhcp-6d9da13e-263b-4162-8d10-beed97497723 ping 50.50.1.3
+   
+   ip netns exec qdhcp-6d9da13e-263b-4162-8d10-beed97497723 ssh cirros@50.50.1.2
    
 
 for more information we suggest the following link:
