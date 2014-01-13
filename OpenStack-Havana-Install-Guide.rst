@@ -1094,7 +1094,7 @@ Attention: gateway to internet is essential to install all packets so we configu
    kvm-ok
    
    
-* THEN WHEN YOU FINALLY GET SOMETHING LIKE::
+* Then when you finally get something like::
    INFO: /dev/kvm exists
    KVM acceleration can be used
 
