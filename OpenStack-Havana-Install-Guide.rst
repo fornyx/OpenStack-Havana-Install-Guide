@@ -1066,9 +1066,17 @@ It could be necessary to reboot your system in case you have a kernel upgrade
     dns-nameservers 192.168.1.1
 
 
-Attention: gateway to internet is essential to install all packets so we configured it on eth1 coherently with existing network BUT since we should have only ONE internet access for the cloud MIND to remove it at the end of the installation!
+Attention: gateway to internet is essential to install all packets so we configured it on eth1 coherently with network (so far in this guide) BUT since we should have only ONE internet access for the cloud MIND to remove it at the end of the installation!
 
-(ACTUALLY WORKING ON IT :-))
+10.3. KVM
+-----------------
+
+* make sure that your hardware enables virtualization::
+
+   apt-get install -y cpu-checker
+   kvm-ok
+
+(ATTENTION: I AM ACTUALLY WORKING ON THIS PARAGRAPH/CHAPTER :-))
 
 
 11. Licensing
