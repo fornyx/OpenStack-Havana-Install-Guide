@@ -990,11 +990,16 @@ http://docs.openstack.org/grizzly/basic-install/apt/content/basic-install_operat
 10. Adding a Compute Node
 ================
 
-All this document do refer to a "demo" installation, optimization of services allocated on servers is out of the scope of this document.
-Nevertheless we think that can be useful and appreciated to indicate the minimum operations that are necessary to add a compute node.
+All this document do refer to a "demo" installation, optimization of services allocation on servers is out of the scope of this document.
+Nevertheless we think that can be useful and appreciated to indicate the minimum operations that are necessary to add a compute node once you finished previous steps and you have a working ALL-IN-ONE installation.
 
 
-TODO
+
+10.1. Preparing the Node
+-----------------
+
+
+(ACTUALLY WORKING ON IT :-))
 
 
 11. Licensing
