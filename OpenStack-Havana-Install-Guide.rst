@@ -1021,6 +1021,36 @@ It could be necessary to reboot your system in case you have a kernel upgrade
    apt-get install -y ntp
 
 
+* Configure the NTP server to follow the controller node::
+
+   #Comment the ubuntu NTP servers
+   sed -i 's/server 0.ubuntu.pool.ntp.org/#server 0.ubuntu.pool.ntp.org/g' /etc/ntp.conf
+   sed -i 's/server 1.ubuntu.pool.ntp.org/#server 1.ubuntu.pool.ntp.org/g' /etc/ntp.conf
+   sed -i 's/server 2.ubuntu.pool.ntp.org/#server 2.ubuntu.pool.ntp.org/g' /etc/ntp.conf
+   sed -i 's/server 3.ubuntu.pool.ntp.org/#server 3.ubuntu.pool.ntp.org/g' /etc/ntp.conf
+
+   #Set the compute node to follow up your conroller node
+   sed -i 's/server ntp.ubuntu.com/server 10.10.10.51/g' /etc/ntp.conf
+
+   service ntp restart
+
+
+* Install ntp service::
+
+   apt-get install -y vlan bridge-utils
+
+* Enable IP_Forwarding::
+
+   sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+   
+   # To save you from rebooting NOW, perform the following
+   sysctl net.ipv4.ip_forward=1
+
+
+10.2. Networking
+-----------------
+
+
 (ACTUALLY WORKING ON IT :-))
 
 
