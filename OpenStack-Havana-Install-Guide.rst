@@ -993,7 +993,12 @@ http://docs.openstack.org/grizzly/basic-install/apt/content/basic-install_operat
 All this document do refer to a "demo" installation, optimization of services allocation on servers is out of the scope of this document.
 Nevertheless we think that can be useful and appreciated to indicate the minimum operations that are necessary to add a compute node once you finished previous steps and you have a working ALL-IN-ONE installation.
 
+This is the assumed IP plan for the second compute node:
+:Node Role: Controller, Network Controller and Compute Node
+:Nics: eth0 (10.10.10.52), eth1 (192.168.1.252)
 
+.....of course you can follow this guide adding as many compute nodes you want...just change network parameters coherently...
+...and always mind that an optimization of the services allocated on each node is out of the scope of THIS document
 
 10.1. Preparing the Node
 -----------------
@@ -1075,6 +1080,27 @@ Attention: gateway to internet is essential to install all packets so we configu
 
    apt-get install -y cpu-checker
    kvm-ok
+   
+* Attention: in case you get something like::
+
+   INFO: /dev/kvm does not exist
+   HINT:   sudo modprobe kvm_intel
+   INFO: Your CPU supports KVM extensions
+   KVM acceleration can be used
+
+* Just digit the following::
+   
+   sudo modprobe kvm_intel
+   kvm-ok
+   
+   
+   then when you finally get something like:
+   INFO: /dev/kvm exists
+   KVM acceleration can be used
+
+   
+   .....go ahead and live in peace :-)
+
 
 (ATTENTION: I AM ACTUALLY WORKING ON THIS PARAGRAPH/CHAPTER :-))
 
