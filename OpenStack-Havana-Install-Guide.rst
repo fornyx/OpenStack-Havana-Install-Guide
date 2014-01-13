@@ -998,6 +998,24 @@ Nevertheless we think that can be useful and appreciated to indicate the minimum
 10.1. Preparing the Node
 -----------------
 
+* After you install Ubuntu 12.04 Server 64bits, Go in sudo mode and don't leave it until the end of this guide::
+
+   sudo su
+
+* Add Havana repositories::
+
+   apt-get install ubuntu-cloud-keyring python-software-properties software-properties-common python-keyring
+   echo deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-proposed/havana main >> /etc/apt/sources.list.d/havana.list
+
+* Update your system::
+
+   apt-get update
+   apt-get upgrade
+   apt-get dist-upgrade
+
+
+It could be necessary to reboot your system in case you have a kernel upgrade
+
 
 (ACTUALLY WORKING ON IT :-))
 
