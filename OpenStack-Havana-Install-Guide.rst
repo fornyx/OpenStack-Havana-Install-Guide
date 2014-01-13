@@ -1050,6 +1050,23 @@ It could be necessary to reboot your system in case you have a kernel upgrade
 10.2. Networking
 -----------------
 
+* Setup Networking (in usual /etc/network/interfaces file)::
+
+   # The primary network interface
+   auto eth0
+    iface eth0 inet static
+    address 10.10.10.52
+    netmask 255.255.255.0
+
+   auto eth1
+    iface eth1 inet static
+    address 192.168.1.252
+    netmask 255.255.255.0
+    gateway 192.168.1.1
+    dns-nameservers 192.168.1.1
+
+
+Attention: gateway to internet is essential to install all packets so we configured it on eth1 coherently with existing network BUT since we should have only ONE internet access for the cloud MIND to remove it at the end of the installation!
 
 (ACTUALLY WORKING ON IT :-))
 
