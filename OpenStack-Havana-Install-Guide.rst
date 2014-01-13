@@ -1016,6 +1016,10 @@ Nevertheless we think that can be useful and appreciated to indicate the minimum
 
 It could be necessary to reboot your system in case you have a kernel upgrade
 
+* Install ntp service::
+
+   apt-get install -y ntp
+
 
 (ACTUALLY WORKING ON IT :-))
 
