@@ -1094,9 +1094,8 @@ Attention: gateway to internet is essential to install all packets so we configu
    kvm-ok
    
 * Then when you finally get something like::
-   INFO: /dev/kvm exists
-   KVM acceleration can be used
-
+   INFO: /dev/kvm does not exist
+   HINT:   sudo modprobe kvm_intel
    
    .....THEN JUST GO AHEAD AND LIVE IN PEACE :-)
 
