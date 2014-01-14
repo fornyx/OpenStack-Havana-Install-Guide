@@ -1113,6 +1113,28 @@ Attention: gateway to internet is essential to install all packets so we configu
    
    service dbus restart && service libvirt-bin restart
 
+10.4. OpenVSwitch
+-----------------
+
+* It's necessary to install the openVSwitch::
+
+  apt-get install -y openvswitch-controller openvswitch-switch openvswitch-datapath-dkms
+
+
+* Suggest to restart the service after that::
+
+  /etc/init.d/openvswitch-switch restart
+
+* The Create the bridges::
+
+  #add br-int,that will be used for VM integration
+  ovs-vsctl add-br br-int
+
+
+
+
+
+
 
 
 (ATTENTION: I AM ACTUALLY WORKING ON THIS PARAGRAPH/CHAPTER :-))
