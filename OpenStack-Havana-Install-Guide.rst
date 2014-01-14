@@ -1277,8 +1277,13 @@ Meanwhile / etc / nova / nova-compute.conf configuration file libvirt_type = qem
    osapi_volume_listen_port=5900
    cinder_catalog_info=volume:cinder:internalURL
 
+* Restart nova-* services::
 
-
+   cd /etc/init.d/; for i in $( ls nova-* ); do sudo service $i restart; cd;done
+   
+   verify:
+   
+   cd /etc/init.d/; for i in $( ls nova-* ); do sudo service $i status; cd;done
 
 
 
