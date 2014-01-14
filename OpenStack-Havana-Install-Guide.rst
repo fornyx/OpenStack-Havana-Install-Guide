@@ -1281,10 +1281,17 @@ Meanwhile / etc / nova / nova-compute.conf configuration file libvirt_type = qem
 
    cd /etc/init.d/; for i in $( ls nova-* ); do sudo service $i restart; cd;done
    
-   verify:
+   ...and verify they're running:
    
    cd /etc/init.d/; for i in $( ls nova-* ); do sudo service $i status; cd;done
 
+* Check for the smiling faces on nova-* services to confirm your installation::
+
+   nova-manage service list
+
+
+Note: If everything works you can see the new node either with nova-manage or via web interface (with admin user in admin tab).
+Then, if you create new VM, from this point on you will be see that the VMs are equally distributed on the hypervisors (the physical machines)
 
 
 (ATTENTION: I AM ACTUALLY WORKING ON THIS PARAGRAPH/CHAPTER :-))
