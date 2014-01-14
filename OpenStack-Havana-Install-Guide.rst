@@ -85,6 +85,15 @@ Status: Stable
    apt-get install ubuntu-cloud-keyring python-software-properties software-properties-common python-keyring
    echo deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-proposed/havana main >> /etc/apt/sources.list.d/havana.list
 
+Note: the official documentation (see http://docs.openstack.org/havana/install-guide/install/apt/content/basics-packages.html) do propone another procedure that we report here as "alternative" procedure :-):
+
+* official procedure::
+
+   apt-get install python-software-properties
+   add-apt-repository cloud-archive:havana
+
+(end of "alternative" procedure)
+
 * Update your system::
 
    apt-get update
@@ -1293,8 +1302,6 @@ Meanwhile / etc / nova / nova-compute.conf configuration file libvirt_type = qem
 Note: If everything works you can see the new node either with nova-manage or via web interface (with admin user in admin tab).
 Then, if you create new VM, from this point on you will be see that the VMs are equally distributed on the hypervisors (the physical machines)
 
-
-(ATTENTION: I AM ACTUALLY WORKING ON THIS PARAGRAPH/CHAPTER :-))
 
 
 11. Licensing
