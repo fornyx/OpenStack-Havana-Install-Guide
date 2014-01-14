@@ -92,7 +92,7 @@ Note: the official documentation (see http://docs.openstack.org/havana/install-g
    apt-get install python-software-properties
    add-apt-repository cloud-archive:havana
 
-(end of "alternative" procedure)
+(end of "alternative/official" procedure)
 
 * Update your system::
 
