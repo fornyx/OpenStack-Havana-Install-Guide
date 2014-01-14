@@ -1117,18 +1117,18 @@ Attention: gateway to internet is essential to install all packets so we configu
 -----------------
 
 * It's necessary to install the openVSwitch::
-
-  apt-get install -y openvswitch-controller openvswitch-switch openvswitch-datapath-dkms
+  
+   apt-get install -y openvswitch-controller openvswitch-switch openvswitch-datapath-dkms
 
 
 * Suggest to restart the service after that::
+  
+   /etc/init.d/openvswitch-switch restart
 
-  /etc/init.d/openvswitch-switch restart
+* Thne Create the bridges::
 
-* The Create the bridges::
-
-  #add br-int,that will be used for VM integration
-  ovs-vsctl add-br br-int
+   #add br-int,that will be used for VM integration
+   ovs-vsctl add-br br-int
 
 
 
