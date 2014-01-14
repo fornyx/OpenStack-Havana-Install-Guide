@@ -252,7 +252,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 * Fill up the keystone database using the two scripts available in the `Scripts folder <https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide/tree/master/KeystoneScripts>`_ of this git repository::
 
-   #Modify the HOST_IP and HOST_IP_EXT variables before executing the scripts
+   #Modify the HOST_IP and EXT_HOST_IP variables before executing the scripts
    
    wget https://raw.github.com/fornyx/OpenStack-Install-Guides/master/KeystoneScripts/keystone_basic.sh
    wget https://raw.github.com/fornyx/OpenStack-Install-Guides/master/KeystoneScripts/keystone_endpoints_basic.sh
@@ -483,7 +483,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    rabbit_host = 10.10.10.51
 
    [keystone_authtoken]
-   auth_host = 10.10.100.51
+   auth_host = 10.10.10.51
    auth_port = 35357
    auth_protocol = http
    admin_tenant_name = service
@@ -550,7 +550,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 * make sure that your hardware enables virtualization::
 
-   apt-get install cpu-checker
+   apt-get install -y cpu-checker
    kvm-ok
 
 * it could be necessary to do::
@@ -683,7 +683,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    service_neutron_metadata_proxy = True
    neutron_metadata_proxy_shared_secret = helloOpenStack
    metadata_host = 10.10.10.51
-   metadata_listen = 127.0.0.1
+   metadata_listen = 10.10.10.51
    metadata_listen_port = 8775
    
    # Compute #
@@ -757,7 +757,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    service_protocol = http
    service_host = 192.168.1.251
    service_port = 5000
-   auth_host = 10.10.1.51
+   auth_host = 10.10.10.51
    auth_port = 35357
    auth_protocol = http
    admin_tenant_name = service
