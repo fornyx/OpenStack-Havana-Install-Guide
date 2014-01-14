@@ -1160,6 +1160,26 @@ Attention: gateway to internet is essential to install all packets so we configu
    
    [agent]
 
+* Edit the main Neutron configuration file (/etc/neutron/neutron.conf)::
+
+   rabbit_host = 10.10.10.51
+   
+   [keystone_authtoken]
+   auth_host = 10.10.10.51
+   auth_port = 35357
+   auth_protocol = http
+   admin_tenant_name = service
+   admin_user = neutron
+   admin_password = openstacktest
+   signing_dir = /var/lib/neutron/keystone-signing
+
+   [DATABASE]
+   connection = mysql://neutron:openstacktest@10.10.10.51/neutron
+
+* Restart all the services::
+
+   service neutron-plugin-openvswitch-agent restart
+
 
 
 
