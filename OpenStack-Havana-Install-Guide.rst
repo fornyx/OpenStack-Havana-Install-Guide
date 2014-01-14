@@ -1181,6 +1181,104 @@ Attention: gateway to internet is essential to install all packets so we configu
    service neutron-plugin-openvswitch-agent restart
 
 
+10.6. Nova
+-----------------
+
+* Install nova's required components for the compute node::
+
+   apt-get install -y nova-compute-kvm
+
+
+Note: If your host does not support kvm virtualization, the nova-compute-kvm switch nova-compute-qemu
+
+
+Meanwhile / etc / nova / nova-compute.conf configuration file libvirt_type = qemu
+
+
+* Now modify authtoken section in the /etc/nova/api-paste.ini file to this::
+
+   [filter:authtoken]
+   paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
+   auth_host = 10.10.10.51
+   auth_port = 35357
+   auth_protocol = http
+   admin_tenant_name = service
+   admin_user = nova
+   admin_password = openstack
+   signing_dirname = /tmp/keystone-signing-nova
+   # Workaround for https://bugs.launchpad.net/nova/+bug/1154809
+   auth_version = v2.0
+
+
+* Edit /etc/nova/nova-compute.conf file::
+
+   [DEFAULT]
+   libvirt_type=kvm
+   compute_driver=libvirt.LibvirtDriver
+   libvirt_ovs_bridge=br-int
+   libvirt_vif_type=ethernet
+   libvirt_vif_driver=nova.virt.libvirt.vif.LibvirtHybridOVSBridgeDriver
+   libvirt_use_virtio_for_bridges=True
+
+* Edit /etc/nova/nova.conf file::
+
+   [DEFAULT]
+   logdir=/var/log/nova
+   state_path=/var/lib/nova
+   lock_path=/run/lock/nova
+   verbose=True
+   api_paste_config=/etc/nova/api-paste.ini
+   compute_scheduler_driver=nova.scheduler.simple.SimpleScheduler
+   rabbit_host=10.10.10.51
+   nova_url=http://10.10.10.51:8774/v1.1/
+   sql_connection=mysql://nova:openstacktest@10.10.10.51/nova
+   root_helper=sudo nova-rootwrap /etc/nova/rootwrap.conf
+
+   # Auth
+   use_deprecated_auth=false
+   auth_strategy=keystone
+
+   # Imaging service
+   glance_api_servers=10.10.10.51:9292
+   image_service=nova.image.glance.GlanceImageService
+
+   # Vnc configuration
+   novnc_enabled=true
+   novncproxy_base_url=http://192.168.1.251:6080/vnc_auto.html
+   novncproxy_port=6080
+   vncserver_proxyclient_address=10.10.10.52
+   vncserver_listen=0.0.0.0
+
+   # Network settings
+   network_api_class=nova.network.neutronv2.api.API
+   neutron_url=http://10.10.10.51:9696
+   neutron_auth_strategy=keystone
+   neutron_admin_tenant_name=service
+   neutron_admin_username=neutron
+   neutron_admin_password=openstacktest
+   neutron_admin_auth_url=http://10.10.10.51:35357/v2.0
+   libvirt_vif_driver=nova.virt.libvirt.vif.LibvirtHybridOVSBridgeDriver
+   linuxnet_interface_driver=nova.network.linux_net.LinuxOVSInterfaceDriver
+   #If you want Neutron + Nova Security groups
+   firewall_driver=nova.virt.firewall.NoopFirewallDriver
+   security_group_api=neutron
+   #If you want Nova Security groups only, comment the two lines above and uncomment line -1-.
+   #-1-firewall_driver=nova.virt.libvirt.firewall.IptablesFirewallDriver
+
+   #Metadata
+   service_neutron_metadata_proxy = True
+   neutron_metadata_proxy_shared_secret = helloOpenStack
+
+   # Compute #
+   compute_driver=libvirt.LibvirtDriver
+
+   # Cinder #
+   volume_api_class=nova.volume.cinder.API
+   osapi_volume_listen_port=5900
+   cinder_catalog_info=volume:cinder:internalURL
+
+
+
 
 
 
