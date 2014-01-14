@@ -1100,6 +1100,20 @@ Attention: gateway to internet is essential to install all packets so we configu
    
    .....THEN JUST GO AHEAD AND LIVE IN PEACE :-)
 
+* Finally you will get a good response. Now, move to install kvm and configure it::
+   
+   apt-get install -y kvm libvirt-bin pm-utils
+   
+* Delete default virtual bridge::
+   
+   virsh net-destroy default
+   virsh net-undefine default
+
+* Restart the libvirt service and dbus to load the new values::
+   
+   service dbus restart && service libvirt-bin restart
+
+
 
 (ATTENTION: I AM ACTUALLY WORKING ON THIS PARAGRAPH/CHAPTER :-))
 
