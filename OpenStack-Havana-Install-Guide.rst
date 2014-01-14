@@ -683,7 +683,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    service_neutron_metadata_proxy = True
    neutron_metadata_proxy_shared_secret = helloOpenStack
    metadata_host = 10.10.10.51
-   metadata_listen = 127.0.0.1
+   metadata_listen = 0.0.0.0
    metadata_listen_port = 8775
    
    # Compute #
