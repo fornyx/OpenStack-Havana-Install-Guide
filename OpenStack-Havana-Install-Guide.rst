@@ -994,10 +994,11 @@ All this document do refer to a "demo" installation, optimization of services al
 Nevertheless we think that can be useful and appreciated to indicate the minimum operations that are necessary to add a compute node once you finished previous steps and you have a working ALL-IN-ONE installation.
 
 This is the assumed IP plan for the second compute node:
+====================
 :Node Role: Controller, Network Controller and Compute Node
 :Nics: eth0 (10.10.10.52), eth1 (192.168.1.252)
 
-.....of course you can follow this guide adding as many compute nodes you want...just change network parameters coherently...
+Of course you can follow this guide adding as many compute nodes you want...just change network parameters coherently...
 ...and always mind that an optimization of the services allocated on each node is out of the scope of THIS document
 
 10.1. Preparing the Node
