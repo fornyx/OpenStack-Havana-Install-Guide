@@ -87,7 +87,7 @@ Status: Stable
 
 Note: the official documentation (see http://docs.openstack.org/havana/install-guide/install/apt/content/basics-packages.html) do propone another procedure that we report here as "alternative" procedure :-):
 
-* official procedure::
+* official procedureto add Havana repositories::
 
    apt-get install python-software-properties
    add-apt-repository cloud-archive:havana
@@ -1320,8 +1320,17 @@ Marco Fornaro  : marco.fornaro@gmail.com
 13. Credits
 =================
 
-This work has been based on:
-TODO
+This work has been mainly based on:
+
+->two guides of Bilel Msekni for Grizzly Installation:
+https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide/blob/OVS_SingleNode/OpenStack_Grizzly_Install_Guide.rst
+https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide/blob/OVS_MultiNode/OpenStack_Grizzly_Install_Guide.rst
+
+->one guide from xidianpanpei (multinode havana installation, chinese language):
+https://github.com/xidianpanpei/OpenStack-Havana-Install-Guide-CN-OVS_MutliNode/blob/master/OpenStack_Grizzly_Install_Guide.rst
+
+
+
 
 14. To do
 =======
