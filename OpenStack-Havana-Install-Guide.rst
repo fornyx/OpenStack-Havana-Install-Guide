@@ -1121,17 +1121,43 @@ Attention: gateway to internet is essential to install all packets so we configu
    apt-get install -y openvswitch-controller openvswitch-switch openvswitch-datapath-dkms
 
 
-* Suggest to restart the service after that::
+* I suggest to restart the service after that::
   
    /etc/init.d/openvswitch-switch restart
 
-* Thne Create the bridges::
+* Then create the bridges::
 
    #add br-int,that will be used for VM integration
    ovs-vsctl add-br br-int
 
 
+10.5. Neutron
+-----------------
 
+* Install the Neutron openvswitch agent::
+
+   apt-get -y install neutron-plugin-openvswitch-agent
+
+* Edit the OVS plugin configuration file (/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini) with::
+
+   #Under the database section
+   [DATABASE]
+   connection = mysql://neutron:openstacktest@10.10.10.51/neutron
+
+   #Under the OVS section
+   [OVS]
+   tenant_network_type = gre
+   tunnel_id_ranges = 1:1000
+   integration_bridge = br-int
+   tunnel_bridge = br-tun
+   local_ip = 10.10.10.52
+   enable_tunneling = True
+
+   #Firewall driver for realizing neutron security group function
+   [SECURITYGROUP]
+   firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
+   
+   [agent]
 
 
 
@@ -1157,7 +1183,6 @@ Marco Fornaro  : marco.fornaro@gmail.com
 =================
 
 This work has been based on:
-
 TODO
 
 14. To do
