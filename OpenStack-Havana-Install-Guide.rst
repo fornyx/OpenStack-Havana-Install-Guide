@@ -27,7 +27,7 @@ Contributors are welcome! Read this guide, send your contribution and get your n
 
 .. contents::
 
-0. What is it?
+What is it?
 ==============
 
 OpenStack Havana Install Guide is projected to be a step-by-step "as easy as possible" guide and has been heavily tested.
@@ -39,7 +39,7 @@ If you like it, don't forget to star it !
 Status: Stable
 
 
-1. Requirements
+Requirements
 ====================
 
 :Node Role: Controller, Network Controller and Compute Node
@@ -51,10 +51,10 @@ Status: Stable
 
 **Note 3:** This is a simple test/demo installation, and so the password policy has been VERY simplified: we use "openstacktest" as default password (see further)
 
-2. Preparing your node
+Preparing your node
 ===============
 
-2.1. Preparing Ubuntu
+Preparing Ubuntu
 -----------------
 
 * After you install Ubuntu 12.04 Server 64bits, Go in sudo mode and don't leave it until the end of this guide::
@@ -75,7 +75,7 @@ Status: Stable
 
 It could be necessary to reboot your system in case you have a kernel upgrade
 
-2.2.Networking
+Networking
 ------------
 
 * Only one NIC should have an internet access, the other is for most Openstack-related operations and configurations::
@@ -101,7 +101,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    service networking restart
 
-2.3. MySQL & RabbitMQ
+MySQL & RabbitMQ
 ------------
 
 * Install MySQL::
@@ -123,7 +123,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
  
 
 
-2.5. Databases set up
+Databases set up
 -------------------
 
 **Note:** Be patient: I have the habit to explicitly set rules for each ip address, even if the '%' should be sufficient :-)
@@ -187,8 +187,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 
 
-2.6. Others
--------------------
+Others
+------
 
 * Install other services::
 
@@ -201,7 +201,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    # To save you from rebooting, perform the following
    sysctl net.ipv4.ip_forward=1
 
-3. Keystone
+Keystone
 =============
 
 * Start by the keystone packages::
@@ -252,7 +252,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    keystone user-list
 
-4. Glance
+Glance
 =============
 
 * We Move now to Glance installation::
@@ -327,10 +327,10 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    glance image-list
    
 
-5. Neutron
+Neutron
 =============
 
-5.1. OpenVSwitch
+OpenVSwitch
 ------------------
 
 * Install the openVSwitch::
@@ -349,7 +349,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    #br-ex is used to make VMs to access the internet
    ovs-vsctl add-br br-ex
 
-5.1.1. OpenVSwitch (Part2, modify network parameters)
+OpenVSwitch (Part2, modify network parameters)
 ------------------
 
 * This will guide you to setting up the br-ex interface. Edit the eth1 in /etc/network/interfaces to become like this::
@@ -389,7 +389,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 
 
-5.2. Neutron-*
+Neutron-*
 ------------------
 
 * Install the Neutron components::
@@ -514,10 +514,10 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    (hopefully you'll enjoy smiling faces :-) )
 
 
-6. Nova
+Nova
 ===========
 
-6.1 KVM
+KVM
 ------------------
 
 * make sure that your hardware enables virtualization::
@@ -580,8 +580,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    service dbus status && service libvirt-bin status
    
 
-6.2 Nova-*
-------------------
+Nova-*
+------
 
 * Start by installing nova components::
 
@@ -705,7 +705,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    nova-manage service list
    
 
-7. Cinder
+Cinder
 ===========
 
 * Install the required packages::
@@ -785,7 +785,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    cd /etc/init.d/; for i in $( ls cinder-* ); do sudo service $i status; cd /root/; done
 
 
-8. Horizon
+Horizon
 ===========
 
 * To install horizon, proceed like this ::
@@ -802,7 +802,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 You can now access your OpenStack **192.168.1.251/horizon** with credentials **admin:openstacktest**.
 
-9. Your first VM
+Your first VM
 ================
 
 To start your first VM, we first need to create a new tenant, user and internal network.
@@ -925,8 +925,8 @@ After ssh operations we get back to our business
 
    neutron floatingip-associate $put_id_floating_ip $put_id_vm_port
 
-9.1. Accessing VMs
------------------
+Accessing VMs
+-------------
 
 In this installation we did configure namespaces, this means that you cannot directly ping/ssh/access a VM DIRECTLY
 Referring to our precedent operations in cap. "9", let's suppose that you created a VM with
@@ -968,7 +968,7 @@ http://docs.openstack.org/grizzly/basic-install/apt/content/basic-install_operat
 (paritularly: "Procedure 3.4. To SSH into the launched instance")
 
 
-10. Adding a Compute Node
+Adding a Compute Node
 ================
 
 All this document do refer to a "demo" installation, optimization of services allocated on servers is out of the scope of this document.
@@ -978,7 +978,7 @@ Nevertheless we think that can be useful and appreciated to indicate the minimum
 TODO
 
 
-11. Licensing
+Licensing
 ============
 
 This OpenStack Havana Install Guide is licensed under a Creative Commons Attribution 3.0 Unported License.
@@ -986,19 +986,19 @@ This OpenStack Havana Install Guide is licensed under a Creative Commons Attribu
 .. image:: http://i.imgur.com/4XWrp.png
 To view a copy of this license, visit [ http://creativecommons.org/licenses/by/3.0/deed.en_US ].
 
-12. Contacts
+Contacts
 ===========
 
 Marco Fornaro  : marco.fornaro@gmail.com
 
-13. Credits
+Credits
 =================
 
 This work has been based on:
 
 TODO
 
-14. To do
+To do
 =======
 
 Your suggestions are always welcomed.
