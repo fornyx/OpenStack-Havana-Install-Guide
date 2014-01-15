@@ -25,26 +25,7 @@ Contributors
 
 Contributors are welcome! Read this guide, send your contribution and get your name listed :-)
 
-Table of Contents
-=================
-
-::
-
-  0. What is it?
-  1. Requirements
-  2. Preparing your node
-  3. Keystone
-  4. Glance
-  5. Neutron
-  6. Nova
-  7. Cinder
-  8. Horizon
-  9. Your first VM
-  10. Adding a Compute Node
-  11. Licensing
-  12. Contacts
-  14. Credits
-  15. To do
+.. contents::
 
 0. What is it?
 ==============
