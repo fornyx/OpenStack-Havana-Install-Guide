@@ -252,7 +252,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 * Fill up the keystone database using the two scripts available in the `Scripts folder <https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide/tree/master/KeystoneScripts>`_ of this git repository::
 
-   #Modify the HOST_IP and HOST_IP_EXT variables before executing the scripts
+   #Modify the HOST_IP and HOST_IP_EXT variables BEFORE executing the scripts
    
    wget https://raw.github.com/fornyx/OpenStack-Install-Guides/master/KeystoneScripts/keystone_basic.sh
    wget https://raw.github.com/fornyx/OpenStack-Install-Guides/master/KeystoneScripts/keystone_endpoints_basic.sh
@@ -333,6 +333,9 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 * Synchronize the glance database::
 
    glance-manage db_sync
+   
+   (Please check the glance database if the tables are populated in the glance.
+   Some times the tables are not generated leading to errors in verifying the glance installation )
 
 * Restart the services again to take into account the new modifications::
 
