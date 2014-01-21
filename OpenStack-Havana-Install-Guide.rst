@@ -1,53 +1,34 @@
-==========================================================
+q================================
   OpenStack Havana Install Guide
-==========================================================
+================================
 
 :Version: 1.0
 :Source: https://github.com/fornyx/OpenStack-Havana-Install-Guide
 :Keywords: Single Multi node OpenStack, Havana, Neutron, Nova, Keystone, Glance, Horizon, Cinder, OpenVSwitch, KVM, Ubuntu Server 12.04 (64 bits).
 
 Authors
-==========
+=======
 
 `Marco Fornaro <http://www.linkedin.com/profile/view?id=49858164>`_ <marco.fornaro@gmail.com> 
 
 Contributors
-==========
+============
 
-===================================================
+=================================================================================
 
  no contributors at the moment..:-(...
  ...BUT this guide owe quite a lot from:
  `Bilel Msekni <https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide>`_ 
   And I like to start this guide thanking him for his work :-)
 
-===================================================
+=================================================================================
 
 Contributors are welcome! Read this guide, send your contribution and get your name listed :-)
 
-Table of Contents
-=================
+.. contents::
 
-::
-
-  0. What is it?
-  1. Requirements
-  2. Preparing your node
-  3. Keystone
-  4. Glance
-  5. Neutron
-  6. Nova
-  7. Cinder
-  8. Horizon
-  9. Your first VM
-  10. Adding a Compute Node
-  11. Licensing
-  12. Contacts
-  14. Credits
-  15. To do
-
-0. What is it?
-==============
+What is it?
+===========
 
 OpenStack Havana Install Guide is projected to be a step-by-step "as easy as possible" guide and has been heavily tested.
 
@@ -58,27 +39,27 @@ If you like it, don't forget to star it !
 Status: Stable
 
 
-1. Requirements
-====================
+Requirements
+============
 
 :Node Role: Controller, Network Controller and Compute Node
 :Nics: eth0 (10.10.10.51), eth1 (192.168.1.251)
 
 **Note 1:** Multi node deployment is currently available in this guide, see "10. Adding a Compute Node".
 
-**Note 2:** We suggest to use dpkg -s <packagename> to make sure you are using Havana packages (you should see version : 2013.2)
+**Note 2:** We suggest to use :code:`dpkg -s <packagename>` to make sure you are using Havana packages (you should see version : 2013.2)
 
 **Note 3:** This is a simple test/demo installation, and so the password policy has been VERY simplified: we use "openstacktest" as default password (see further)
 
-2. Preparing your node
-===============
+Preparing your node
+===================
 
-2.1. Preparing Ubuntu
+Preparing Ubuntu
 -----------------
 
 * After you install Ubuntu 12.04 Server 64bits, Go in sudo mode and don't leave it until the end of this guide::
 
-   sudo su
+   sudo -i
 
 * Add Havana repositories::
 
@@ -96,15 +77,13 @@ Note: the official documentation (see http://docs.openstack.org/havana/install-g
 
 * Update your system::
 
-   apt-get update
-   apt-get upgrade
-   apt-get dist-upgrade
+   apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade
 
 
 It could be necessary to reboot your system in case you have a kernel upgrade
 
-2.2.Networking
-------------
+Networking
+----------
 
 * Only one NIC should have an internet access, the other is for most Openstack-related operations and configurations::
 
@@ -129,8 +108,16 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    service networking restart
 
-2.3. MySQL & RabbitMQ
-------------
+All necessary packages
+----------------------
+
+You may use the following command to install all the packages used throughout this guide::
+
+   apt-get install -y mysql-server python-mysqldb rabbitmq-server ntp vlan bridge-utils keystone glance openvswitch-controller openvswitch-switch openvswitch-datapath-dkms neutron-server neutron-plugin-openvswitch neutron-plugin-openvswitch-agent dnsmasq neutron-dhcp-agent neutron-l3-agent neutron-metadata-agent kvm libvirt-bin pm-utils nova-api nova-cert novnc nova-consoleauth nova-scheduler nova-novncproxy nova-doc nova-conductor nova-compute-kvm cinder-api cinder-scheduler cinder-volume openstack-dashboard memcached && dpkg --purge openstack-dashboard-ubuntu-theme
+
+
+MySQL & RabbitMQ
+----------------
 
 * Install MySQL::
 
@@ -151,15 +138,23 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
  
 
 
-2.5. Databases set up
--------------------
+Databases set up
+----------------
 
 **Note:** Be patient: I have the habit to explicitly set rules for each ip address, even if the '%' should be sufficient :-)
 
 * Setting up Databases::
 
-   mysql -u root -p your_mysql_root_password
-   #Keystone
+Either use the script::
+
+   wget https://raw2.github.com/Ch00k/OpenStack-Havana-Install-Guide/master/populate_database.sh
+   sh populate_database.sh
+
+Or execute all of the following manually::
+
+   mysql -u root -p <your_mysql_root_password>
+   
+   # Keystone
    CREATE DATABASE keystone;
    GRANT ALL ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'openstacktest';
    GRANT ALL ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY 'openstacktest';
@@ -169,7 +164,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    quit;
    (test database access and show databases with user keystone)
 
-   #Glance
+   # Glance
    mysql -u root -p your_mysql_root_password
    CREATE DATABASE glance;
    GRANT ALL ON glance.* TO 'glance'@'%' IDENTIFIED BY 'openstacktest';
@@ -180,7 +175,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    quit;
    (test database access and show databases with user glance)
 
-   #Neutron
+   # Neutron
    mysql -u root -p your_mysql_root_password
    CREATE DATABASE neutron;
    GRANT ALL ON neutron.* TO 'neutron'@'%' IDENTIFIED BY 'openstacktest';
@@ -191,7 +186,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    quit;
    (test database access and show databases with user neutron)
 
-   #Nova
+   # Nova
    mysql -u root -p your_mysql_root_password
    CREATE DATABASE nova;
    GRANT ALL ON nova.* TO 'nova'@'%' IDENTIFIED BY 'openstacktest';
@@ -202,7 +197,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    quit;
    (test database access and show databases with user nova)
 
-   #Cinder
+   # Cinder
    mysql -u root -p your_mysql_root_password
    CREATE DATABASE cinder;
    GRANT ALL ON cinder.* TO 'cinder'@'%' IDENTIFIED BY 'openstacktest';
@@ -215,8 +210,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 
 
-2.6. Others
--------------------
+Others
+------
 
 * Install other services::
 
@@ -229,8 +224,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    # To save you from rebooting, perform the following
    sysctl net.ipv4.ip_forward=1
 
-3. Keystone
-=============
+Keystone
+========
 
 * Start by the keystone packages::
 
@@ -241,9 +236,13 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    service keystone status
 
 
-* Adapt the connection attribute in the /etc/keystone/keystone.conf to the new database::
+* Adapt the connection attribute in the :code:`/etc/keystone/keystone.conf` to the new database::
 
    connection = mysql://keystone:openstacktest@10.10.10.51/keystone
+
+* Remove Keystone SQLite database::
+
+   rm /var/lib/keystone/keystone.db
 
 * Restart the identity service then synchronize the database::
 
@@ -252,16 +251,13 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 * Fill up the keystone database using the two scripts available in the `Scripts folder <https://github.com/mseknibilel/OpenStack-Grizzly-Install-Guide/tree/master/KeystoneScripts>`_ of this git repository::
 
-   #Modify the HOST_IP and HOST_IP_EXT variables before executing the scripts
+   #Modify the HOST_IP and EXT_HOST_IP variables before executing the scripts
    
-   wget https://raw.github.com/fornyx/OpenStack-Install-Guides/master/KeystoneScripts/keystone_basic.sh
-   wget https://raw.github.com/fornyx/OpenStack-Install-Guides/master/KeystoneScripts/keystone_endpoints_basic.sh
+   wget https://raw2.github.com/Ch00k/OpenStack-Havana-Install-Guide/master/keystone_basic.sh
+   wget https://raw2.github.com/Ch00k/OpenStack-Havana-Install-Guide/master/keystone_endpoints_basic.sh
 
-   chmod +x keystone_basic.sh
-   chmod +x keystone_endpoints_basic.sh
-
-   ./keystone_basic.sh
-   ./keystone_endpoints_basic.sh
+   sh keystone_basic.sh
+   sh keystone_endpoints_basic.sh
 
 * Create a simple credential file and load it so you won't be bothered later::
 
@@ -280,8 +276,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    keystone user-list
 
-4. Glance
-=============
+Glance
+======
 
 * We Move now to Glance installation::
 
@@ -292,20 +288,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    service glance-api status
    service glance-registry status
 
-
-* Update /etc/glance/glance-api-paste.ini with::
-
-   [filter:authtoken]
-   paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
-   delay_auth_decision = true
-   auth_host = 10.10.10.51
-   auth_port = 35357
-   auth_protocol = http
-   admin_tenant_name = service
-   admin_user = glance
-   admin_password = openstacktest
-
-* Update the /etc/glance/glance-registry-paste.ini with::
+* Update the :code:`/etc/glance/glance-api-paste.ini` and :code:`/etc/glance/glance-registry-paste.ini` with::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
@@ -316,15 +299,25 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    admin_user = glance
    admin_password = openstacktest
 
-* Update /etc/glance/glance-api.conf with::
+* Update :code:`/etc/glance/glance-api.conf` and :code:`/etc/glance/glance-registry.conf` with::
 
+   [DEFAULT]
    sql_connection = mysql://glance:openstacktest@10.10.10.51/glance
 
-* And::
+   [keystone_authtoken]
+   auth_host = 10.10.10.51
+   auth_port = 35357
+   auth_protocol = http
+   admin_tenant_name = service
+   admin_user = glance
+   admin_password = openstacktest
 
    [paste_deploy]
    flavor = keystone
-   
+
+* Remove Glance's SQLite database::
+
+   rm /var/lib/glance/glance.sqlite   
 
 * Restart the glance-api and glance-registry services::
 
@@ -355,11 +348,11 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    glance image-list
    
 
-5. Neutron
-=============
+Neutron
+=======
 
-5.1. OpenVSwitch
-------------------
+OpenVSwitch
+-----------
 
 * Install the openVSwitch::
 
@@ -377,10 +370,10 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    #br-ex is used to make VMs to access the internet
    ovs-vsctl add-br br-ex
 
-5.1.1. OpenVSwitch (Part2, modify network parameters)
-------------------
+OpenVSwitch (Part2, modify network parameters)
+----------------------------------------------
 
-* This will guide you to setting up the br-ex interface. Edit the eth1 in /etc/network/interfaces to become like this::
+* This will guide you to setting up the br-ex interface. Edit the eth1 in :code:`/etc/network/interfaces` to become like this::
 
    # VM internet Access 
    auto eth1 
@@ -417,8 +410,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 
 
-5.2. Neutron-*
-------------------
+Neutron-*
+---------
 
 * Install the Neutron components::
 
@@ -429,7 +422,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    cd /etc/init.d/; for i in $( ls neutron-* ); do sudo service $i status; cd; done
    
-* Edit /etc/neutron/api-paste.ini ::
+* Edit :code:`/etc/neutron/api-paste.ini` ::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
@@ -440,7 +433,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    admin_user = neutron
    admin_password = openstacktest
 
-* Edit the OVS plugin configuration file /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini with::: 
+* Edit the OVS plugin configuration file :code:`/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini` with::: 
 
    #Under the database section
    [DATABASE]
@@ -459,7 +452,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    [SECURITYGROUP]
    firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
 
-* Update /etc/neutron/metadata_agent.ini::
+* Update :code:`/etc/neutron/metadata_agent.ini`::
 
    # The Neutron user information for accessing the Neutron API.
    auth_url = http://10.10.10.51:35357/v2.0
@@ -477,13 +470,13 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    metadata_proxy_shared_secret = helloOpenStack
 
-* Edit your /etc/neutron/neutron.conf::
+* Edit your :code:`/etc/neutron/neutron.conf`::
 
    #RabbitMQ IP
    rabbit_host = 10.10.10.51
 
    [keystone_authtoken]
-   auth_host = 10.10.100.51
+   auth_host = 10.10.10.51
    auth_port = 35357
    auth_protocol = http
    admin_tenant_name = service
@@ -495,7 +488,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    connection = mysql://neutron:openstacktest@10.10.10.51/neutron
 
 
-* Edit your /etc/neutron/l3_agent.ini::
+* Edit your :code:`/etc/neutron/l3_agent.ini`::
 
    [DEFAULT]
    interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
@@ -511,7 +504,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
 
 
-* Edit your /etc/neutron/dhcp_agent.ini::
+* Edit your :code:`/etc/neutron/dhcp_agent.ini`::
 
    [DEFAULT]
    interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
@@ -526,7 +519,9 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf
    state_path = /var/lib/neutron
 
+* Remove Neutron's SQLite database::
 
+   rm /var/lib/neutron/neutron.sqlite
 
 * Restart all neutron services::
 
@@ -542,15 +537,15 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    (hopefully you'll enjoy smiling faces :-) )
 
 
-6. Nova
-===========
+Nova
+====
 
-6.1 KVM
-------------------
+KVM
+---
 
 * make sure that your hardware enables virtualization::
 
-   apt-get install cpu-checker
+   apt-get install -y cpu-checker
    kvm-ok
 
 * it could be necessary to do::
@@ -570,7 +565,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 
 
-* Edit the cgroup_device_acl array in the /etc/libvirt/qemu.conf file to::
+* Edit the cgroup_device_acl array in the :code:`/etc/libvirt/qemu.conf` file to::
 
    cgroup_device_acl = [
    "/dev/null", "/dev/full", "/dev/zero",
@@ -585,17 +580,17 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    virsh net-destroy default
    virsh net-undefine default
 
-* Enable live migration by updating /etc/libvirt/libvirtd.conf file::
+* Enable live migration by updating :code:`/etc/libvirt/libvirtd.conf` file::
 
    listen_tls = 0
    listen_tcp = 1
    auth_tcp = "none"
 
-* Edit libvirtd_opts variable in /etc/init/libvirt-bin.conf file::
+* Edit libvirtd_opts variable in :code:`/etc/init/libvirt-bin.conf` file::
 
    env libvirtd_opts="-d -l"
 
-* Edit /etc/default/libvirt-bin file ::
+* Edit :code:`/etc/default/libvirt-bin` file ::
 
    libvirtd_opts="-d -l"
 
@@ -608,8 +603,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    service dbus status && service libvirt-bin status
    
 
-6.2 Nova-*
-------------------
+Nova-*
+------
 
 * Start by installing nova components::
 
@@ -620,7 +615,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    cd /etc/init.d/; for i in $( ls nova-* ); do service $i status; cd; done
 
 
-* Now modify authtoken section in the /etc/nova/api-paste.ini file to this::
+* Now modify authtoken section in the :code:`/etc/nova/api-paste.ini` file to this::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
@@ -634,7 +629,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    # Workaround for https://bugs.launchpad.net/nova/+bug/1154809
    auth_version = v2.0
 
-* Modify the /etc/nova/nova.conf like this::
+* Modify the :code:`/etc/nova/nova.conf` like this::
 
    [DEFAULT]
    logdir=/var/log/nova
@@ -696,7 +691,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 
 
-* Edit the /etc/nova/nova-compute.conf::
+* Edit the :code:`/etc/nova/nova-compute.conf`::
 
    [DEFAULT]
    libvirt_type=kvm
@@ -713,7 +708,9 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    (mind nova cert is ok if it’s down: still the db has to be built up!)
 
+* Remove Nova's SQLite database::
 
+   rm /var/lib/nova/nova.sqlite
 
 * Synchronize your database::
 
@@ -733,8 +730,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    nova-manage service list
    
 
-7. Cinder
-===========
+Cinder
+======
 
 * Install the required packages::
 
@@ -750,14 +747,14 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    service open-iscsi start
 
 
-* Configure /etc/cinder/api-paste.ini like the following::
+* Configure :code:`/etc/cinder/api-paste.ini` like the following::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
    service_protocol = http
    service_host = 192.168.1.251
    service_port = 5000
-   auth_host = 10.10.1.51
+   auth_host = 10.10.10.51
    auth_port = 35357
    auth_protocol = http
    admin_tenant_name = service
@@ -765,7 +762,7 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    admin_password = openstacktest
 
 
-* Edit the /etc/cinder/cinder.conf to::
+* Edit the :code:`/etc/cinder/cinder.conf` to::
 
    [DEFAULT]
    rootwrap_config=/etc/cinder/rootwrap.conf
@@ -777,6 +774,10 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    verbose = True
    auth_strategy = keystone
    #osapi_volume_listen_port=5900
+
+* Remove Cinder's SQLite database::
+
+   rm /var/lib/cinder/cinder.sqlite
 
 * Then, synchronize your database::
 
@@ -813,8 +814,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
    cd /etc/init.d/; for i in $( ls cinder-* ); do sudo service $i status; cd /root/; done
 
 
-8. Horizon
-===========
+Horizon
+=======
 
 * To install horizon, proceed like this ::
 
@@ -830,8 +831,8 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
 You can now access your OpenStack **192.168.1.251/horizon** with credentials **admin:openstacktest**.
 
-9. Your first VM
-================
+Your first VM
+=============
 
 To start your first VM, we first need to create a new tenant, user and internal network.
 
@@ -953,8 +954,8 @@ After ssh operations we get back to our business
 
    neutron floatingip-associate $put_id_floating_ip $put_id_vm_port
 
-9.1. Accessing VMs
------------------
+Accessing VMs
+-------------
 
 In this installation we did configure namespaces, this means that you cannot directly ping/ssh/access a VM DIRECTLY
 Referring to our precedent operations in cap. "9", let's suppose that you created a VM with
@@ -996,8 +997,8 @@ http://docs.openstack.org/grizzly/basic-install/apt/content/basic-install_operat
 (paritularly: "Procedure 3.4. To SSH into the launched instance")
 
 
-10. Adding a Compute Node
-================
+Adding a Compute Node
+=====================
 
 All this document do refer to a "demo" installation, optimization of services allocation on servers is out of the scope of this document.
 Nevertheless we think that can be useful and appreciated to indicate the minimum operations that are necessary to add a compute node once you finished previous steps and you have a working ALL-IN-ONE installation.
@@ -1304,21 +1305,21 @@ Then, if you create new VM, from this point on you will be see that the VMs are 
 
 
 
-11. Licensing
-============
+Licensing
+=========
 
 This OpenStack Havana Install Guide is licensed under a Creative Commons Attribution 3.0 Unported License.
 
 .. image:: http://i.imgur.com/4XWrp.png
 To view a copy of this license, visit [ http://creativecommons.org/licenses/by/3.0/deed.en_US ].
 
-12. Contacts
-===========
+Contacts
+========
 
 Marco Fornaro  : marco.fornaro@gmail.com
 
-13. Credits
-=================
+Credits
+=======
 
 This work has been mainly based on:
 
@@ -1332,8 +1333,8 @@ https://github.com/xidianpanpei/OpenStack-Havana-Install-Guide-CN-OVS_MutliNode/
 
 
 
-14. To do
-=======
+To do
+=====
 
 Your suggestions are always welcomed.
 
