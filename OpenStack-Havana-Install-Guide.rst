@@ -99,6 +99,14 @@ Please Note that in our simple architecture the DNS-nameservers and the default 
 
    service networking restart
 
+All necessary packages
+----------------------
+
+You may use the following command to install all the packages used throughout this guide::
+
+   apt-get install -y mysql-server python-mysqldb rabbitmq-server ntp vlan bridge-utils keystone glance openvswitch-controller openvswitch-switch openvswitch-datapath-dkms neutron-server neutron-plugin-openvswitch neutron-plugin-openvswitch-agent dnsmasq neutron-dhcp-agent neutron-l3-agent neutron-metadata-agent kvm libvirt-bin pm-utils nova-api nova-cert novnc nova-consoleauth nova-scheduler nova-novncproxy nova-doc nova-conductor nova-compute-kvm cinder-api cinder-scheduler cinder-volume openstack-dashboard memcached && dpkg --purge openstack-dashboard-ubuntu-theme
+
+
 MySQL & RabbitMQ
 ----------------
 
@@ -130,7 +138,7 @@ Databases set up
 
 Either use the script::
 
-   wget https://raw2.github.com/Ch00k/OpenStack-Havana-Install-Guide/master/populate_database.show
+   wget https://raw2.github.com/Ch00k/OpenStack-Havana-Install-Guide/master/populate_database.sh
    sh populate_database.sh
 
 Or execute all of the following manually::
@@ -223,6 +231,10 @@ Keystone
 
    connection = mysql://keystone:openstacktest@10.10.10.51/keystone
 
+* Remove Keystone SQLite database::
+
+   rm /var/lib/keystone/keystone.db
+
 * Restart the identity service then synchronize the database::
 
    service keystone restart
@@ -267,20 +279,7 @@ Glance
    service glance-api status
    service glance-registry status
 
-
-* Update :code:`/etc/glance/glance-api-paste.ini` with::
-
-   [filter:authtoken]
-   paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
-   delay_auth_decision = true
-   auth_host = 10.10.10.51
-   auth_port = 35357
-   auth_protocol = http
-   admin_tenant_name = service
-   admin_user = glance
-   admin_password = openstacktest
-
-* Update the :code:`/etc/glance/glance-registry-paste.ini` and :code:`/etc/glance/glance-registry-paste.ini` with::
+* Update the :code:`/etc/glance/glance-api-paste.ini` and :code:`/etc/glance/glance-registry-paste.ini` with::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
@@ -306,7 +305,10 @@ Glance
 
    [paste_deploy]
    flavor = keystone
-   
+
+* Remove Glance's SQLite database::
+
+   rm /var/lib/glance/glance.sqlite   
 
 * Restart the glance-api and glance-registry services::
 
@@ -411,7 +413,7 @@ Neutron-*
 
    cd /etc/init.d/; for i in $( ls neutron-* ); do sudo service $i status; cd; done
    
-* Edit /etc/neutron/api-paste.ini ::
+* Edit :code:`/etc/neutron/api-paste.ini` ::
 
    [filter:authtoken]
    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
@@ -508,7 +510,9 @@ Neutron-*
    root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf
    state_path = /var/lib/neutron
 
+* Remove Neutron's SQLite database::
 
+   rm /var/lib/neutron/neutron.sqlite
 
 * Restart all neutron services::
 
@@ -577,7 +581,7 @@ KVM
 
    env libvirtd_opts="-d -l"
 
-* Edit /etc/default/libvirt-bin file ::
+* Edit :code:`/etc/default/libvirt-bin` file ::
 
    libvirtd_opts="-d -l"
 
@@ -695,7 +699,9 @@ Nova-*
 
    (mind nova cert is ok if it’s down: still the db has to be built up!)
 
+* Remove Nova's SQLite database::
 
+   rm /var/lib/nova/nova.sqlite
 
 * Synchronize your database::
 
@@ -759,6 +765,10 @@ Cinder
    verbose = True
    auth_strategy = keystone
    #osapi_volume_listen_port=5900
+
+* Remove Cinder's SQLite database::
+
+   rm /var/lib/cinder/cinder.sqlite
 
 * Then, synchronize your database::
 
